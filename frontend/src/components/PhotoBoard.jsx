@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Photo from "./Photo";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import DOMPurify from "dompurify";
+import PropTypes from "prop-types";
 
 function rand(min, max) {
         return Math.random() * (max - min) + min;
@@ -58,7 +59,7 @@ export default function PhotoBoard({ photos = [] }) {
 
                 if (count === 0) return [];
 
-                return photos.map((p, i) => {
+                return photos.map((p) => {
                         // Very minor random deviations for subtle scattered look
                         const offsetX = rand(-3, 3); // ±3px offset
                         const offsetY = rand(-3, 3); // ±3px offset
@@ -218,7 +219,7 @@ export default function PhotoBoard({ photos = [] }) {
                                                 if (!(isEditingPhoto || isUploading || isDeleting || isDownloading)) onClosePhoto();
                                         }}
                                 >
-                                        {( isDeleting || isDownloading) && (
+                                        {(isDeleting || isDownloading) && (
                                                 <div className="spinner-overlay">
                                                         <div
                                                                 className="spinner"
@@ -292,9 +293,22 @@ export default function PhotoBoard({ photos = [] }) {
 
                         <div ref={boardRef} className="photo-board">
                                 {items.map((photo) => (
-                                        <Photo key={photo.id} {...photo} onOpenPhoto={setOpenPhoto} />
+                                        <Photo key={photo.id} {...photo} onOpenPhoto={onOpenPhoto} />
                                 ))}
                         </div>
                 </>
         );
 }
+
+PhotoBoard.propTypes = {
+        photos: PropTypes.array(
+                PropTypes.shape({
+                        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+                        title: PropTypes.string.isRequired,
+                        date: PropTypes.string, // or PropTypes.instanceOf(Date) if you pass Date objects
+                        caption: PropTypes.string,
+                        image_endpoint: PropTypes.string.isRequired,
+                        placeholder_endpoint: PropTypes.string,
+                }),
+        ).isRequired,
+};

@@ -15,7 +15,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 const photosTable = "photos";
-const accountsTable = "account";
+// const accountsTable = "account";
 
 const base_path = "/var/www/gaby-shared-album";
 const temp_image_path = process.env.TEMP_IMAGE_FILE_PATH;

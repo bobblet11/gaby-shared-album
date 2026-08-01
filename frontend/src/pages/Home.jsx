@@ -276,7 +276,7 @@ export default function HomePage() {
         return (
                 <div className="home-page">
                         <header className="top-banner">
-                                <div className="title-card">Gaby's Corkboard</div>
+                                <div className="title-card">Gaby&apos;s Corkboard</div>
                                 <button className="upload-button" onClick={goToUploadPage}>
                                         Upload
                                 </button>

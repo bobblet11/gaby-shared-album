@@ -84,7 +84,7 @@ export default function UploadPage() {
                                         throw new Error(`Upload failed: ${response.statusText}`);
                                 }
 
-                                const result = await response.json();
+                                await response.json();
                         } else {
                                 await new Promise((resolve) => setTimeout(resolve, 5000));
                         }
@@ -100,7 +100,7 @@ export default function UploadPage() {
         return (
                 <div className="upload-page">
                         <header className="top-banner">
-                                <div className="title-card">Gaby's Corkboard</div>
+                                <div className="title-card">Gaby&apos;s Corkboard</div>
                                 <button className="upload-button" onClick={goToHomePage} disabled={isUploading}>
                                         Home
                                 </button>

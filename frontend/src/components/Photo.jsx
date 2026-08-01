@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-
+import PropTypes from "prop-types";
 
 export default function Photo({ id, title, date, caption, image_endpoint, placeholder_endpoint, rotation = 0, size = 1, offsetX = 0, offsetY = 0, onOpenPhoto }) {
         const [isLoaded, setIsLoaded] = useState(false);
-        
+
         const API_URL = process.env.REACT_APP_API_URL;
 
         function resolvePhotoUrl(value) {
-              // If it starts with http:// or https://, treat as full URL
-              if (/^https?:\/\//i.test(value)) {
-                return value;
-              }
-              // Otherwise, assume it's an endpoint and prepend API_URL
-              return `${API_URL}/media/${value}`;
+                // If it starts with http:// or https://, treat as full URL
+                if (/^https?:\/\//i.test(value)) {
+                        return value;
+                }
+                // Otherwise, assume it's an endpoint and prepend API_URL
+                return `${API_URL}/media/${value}`;
         }
 
         const checkedImageUrl = resolvePhotoUrl(image_endpoint);
@@ -62,3 +62,19 @@ export default function Photo({ id, title, date, caption, image_endpoint, placeh
                 </div>
         );
 }
+
+
+
+Photo.propTypes = {
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        title: PropTypes.string.isRequired,
+        date: PropTypes.string, // or PropTypes.instanceOf(Date) if you pass Date objects
+        caption: PropTypes.string,
+        image_endpoint: PropTypes.string.isRequired,
+        placeholder_endpoint: PropTypes.string,
+        rotation: PropTypes.number,
+        size: PropTypes.number,
+        offsetX: PropTypes.number,
+        offsetY: PropTypes.number,
+        onOpenPhoto: PropTypes.func.isRequired,
+};
