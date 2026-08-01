@@ -76,6 +76,8 @@ jobs:
                                           echo "Exporting environment variables..."
                                           export REPO_NAME="${{ github.event.repository.name }}"
                                           export REPO_OWNER="${{ github.repository_owner }}"
+                                          export GITHUB_ACTOR="${{github.actor}}"
+                                          export ACCOUNT_TOKEN="${{ secrets.ACCOUNT_TOKEN }}"
                                           export PROJECT_PATH="/srv/${REPO_NAME}"
 
                                           export DB_USER="${{ secrets.DB_USER }}"
@@ -114,7 +116,8 @@ jobs:
 
                                           if [ ! -d "${PROJECT_PATH}/.git" ]; then
                                             echo "Cloning repo..."
-                                            git clone "https://github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
+                                            git clone "https://${GITHUB_ACTOR}:${ACCOUNT_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
+
                                           else
                                             echo "Updating repo..."
                                             cd "$PROJECT_PATH"
