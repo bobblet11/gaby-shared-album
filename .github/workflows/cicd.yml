@@ -51,6 +51,7 @@ jobs:
                                   script: |
               
                                           sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
+                                          sudo chown deploy-github:deploy-github /var/www/${{ github.event.repository.name }}
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
