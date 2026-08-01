@@ -2,12 +2,38 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
 
-
-/** @type {import('eslint').Linter.Config[]} */
 export default [
-  {files: ["**/*.{js,mjs,cjs,jsx}"]},
-  {files: ["**/*.js"], languageOptions: {sourceType: "module"}},
-  { languageOptions: { globals: { ...globals.browser, process: "readonly" } }},
-  pluginJs.configs.recommended,
-  pluginReact.configs.flat.recommended,
+        pluginJs.configs.recommended,
+        pluginReact.configs.flat.recommended,
+        {
+                files: ["frontend/src/**/*.test.{js,jsx}"],
+                languageOptions: {
+                        ecmaVersion: "latest",
+                        sourceType: "module",
+                        globals: {
+                                ...globals.browser,
+                                ...globals.jest,
+                                process: "readonly",
+                        },
+                },
+        },
+        {
+                files: ["frontend/src/**/*.{js,jsx}"],
+                languageOptions: {
+                        ecmaVersion: "latest",
+                        sourceType: "module",
+                        globals: {
+                                ...globals.browser,
+                                process: "readonly",
+                        },
+                },
+                rules: {
+                        "react/react-in-jsx-scope": "off",
+                },
+                settings: {
+                        react: {
+                                version: "detect",
+                        },
+                },
+        },
 ];
