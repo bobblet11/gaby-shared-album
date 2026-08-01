@@ -39,6 +39,18 @@ jobs:
                           with:
                                   name: react-build
                                   path: frontend/build
+                        
+
+                        - name: Deploy frontend and backend to prod servers
+                          uses: appleboy/ssh-action@v0.1.10
+                          with:
+                                  host: ${{ secrets.SSH_IP }}
+                                  username: ${{ secrets.SSH_USER }}
+                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  port: ${{ secrets.SSH_PORT }}
+                                  script: |
+              
+                                          sudo mkdir -p /var/www/${{ github.event.repository.name }}/build"
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
