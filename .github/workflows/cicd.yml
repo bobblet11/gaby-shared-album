@@ -18,7 +18,7 @@ jobs:
                           run: npm ci
 
                         - name: Lint frontend
-                          run: npm run lint --workspace frontend
+                          run: npm run lint
 
                         - name: Build frontend
                           run: npm run build --workspace frontend
