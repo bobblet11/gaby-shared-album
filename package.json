@@ -18,7 +18,7 @@
                 "start:backend": "npm run start --workspace frontend",
                 "build:frontend": "npm run build --workspace frontend",
                 "ci": "echo \"Error: no ci specified\" && exit 1",
-                "lint": "eslint ."
+                "lint": "npm run lint --workspaces"
         },
         "devDependencies": {
                 "@eslint/js": "^9.39.5",
