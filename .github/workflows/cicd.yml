@@ -59,8 +59,8 @@ jobs:
                                   username: ${{ secrets.SSH_USER }}
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   port: ${{ secrets.SSH_PORT }}
-                                  source: "frontend/build/*"
-                                  target: "/var/www/${{ github.event.repository.name }}/build"
+                                  source: "frontend/build"
+                                  target: "/var/www/${{ github.event.repository.name }}"
 
                         - name: Deploy frontend and backend to prod servers
                           uses: appleboy/ssh-action@v0.1.10
