@@ -114,7 +114,7 @@ jobs:
 
                                           if [ ! -d "${PROJECT_PATH}/.git" ]; then
                                             echo "Cloning repo..."
-                                            git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$PROJECT_PATH"
+                                            git clone "https://github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
                                           else
                                             echo "Updating repo..."
                                             cd "$PROJECT_PATH"
