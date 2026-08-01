@@ -1,0 +1,152 @@
+# cicd.yaml
+
+name: Deploy
+
+on:
+        push:
+                branches:
+                        - main
+
+jobs:
+        ci-lint-build:
+                runs-on: ubuntu-latest
+                steps:
+                        - name: Install, lint, build
+                          run: |
+                            npm ci
+                            npm run lint
+                            npm run build --workspace frontend
+
+                        - name: Upload build artifact
+                          uses: actions/upload-artifact@v4
+                          with:
+                            name: react-build
+                            path: frontend/build
+
+        deploy:
+                runs-on: ubuntu-latest
+                environment: prod
+                needs: ci-lint-build
+                steps:
+
+                        - name: Download build artifact
+                          uses: actions/download-artifact@v4
+                          with:
+                            name: react-build
+                            path: frontend/build
+
+                        - name: Upload build to server
+                          uses: appleboy/scp-action@v0.1.7
+                          with:
+                            host: ${{ secrets.SSH_IP }}
+                            username: ${{ secrets.SSH_USER }}
+                            key: ${{ secrets.SSH_PRIVATE_KEY }}
+                            port: ${{ secrets.SSH_PORT }}
+                            source: "frontend/build/*"
+                            target: "/var/www/${{ github.event.repository.name }}/build"
+
+                        - name: Deploy frontend and backend to prod servers
+                          uses: appleboy/ssh-action@v0.1.10
+                          with:
+                                  host: ${{ secrets.SSH_IP }}
+                                  username: ${{ secrets.SSH_USER }}
+                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  port: ${{ secrets.SSH_PORT }}
+                                  script: |
+
+                                          echo "----------------------------------------------"
+                                          echo "Exporting environment variables..."
+                                          export REPO_NAME="${{ github.event.repository.name }}"
+                                          export REPO_OWNER="${{ github.repository_owner }}"
+                                          export PROJECT_PATH="/srv/${REPO_NAME}"
+
+                                          export DB_USER="${{ secrets.DB_USER }}"
+                                          export DB_PASS="${{ secrets.DB_PASS }}"
+                                          export DB_NAME="${{ vars.DB_NAME }}"
+                                          export DB_HOST="${{ vars.DB_HOST }}"
+                                          export DB_PORT="${{ vars.DB_PORT }}"
+                                          export API_PORT="${{ vars.API_PORT }}"
+
+                                          export STATIC_CONTENT_PATH="/var/www/${REPO_NAME}"
+                                          export STATIC_MEDIA_PATH="${STATIC_CONTENT_PATH}/uploads"
+
+                                          export DOWN_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
+                                          export FULL_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME}}"
+                                          export ORIGINAL_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
+                                          export TEMP_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.TEMP_IMAGE_FOLDER_NAME }}"
+
+                                          # export FRONTEND_BUILD_SRC="${PROJECT_PATH}/frontend/build"
+                                          # export FRONTEND_BUILD_DST="/var/www/${REPO_NAME}/build"
+
+                                          export NGINX_CONFIG_SRC="${PROJECT_PATH}/nginx/${REPO_NAME}"
+                                          export NGINX_CONFIG_DST="/etc/nginx/sites-available/${REPO_NAME}"
+                                          export NGINX_ENABLED_PATH="/etc/nginx/sites-enabled/${REPO_NAME}"
+                                          
+                                          export REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}"
+                                          export REACT_APP_FEATURE_FLAG="${{ vars.REACT_APP_FEATURE_FLAG }}"
+
+                                          echo "Environment variables exported."
+
+
+
+                                          echo "----------------------------------------------"
+                                          echo "Staging repo..."
+                                          sudo mkdir -p "${PROJECT_PATH}"
+                                          sudo chown $USER:$USER "$PROJECT_PATH"
+
+                                          if [ ! -d "${PROJECT_PATH}/.git" ]; then
+                                            echo "Cloning repo..."
+                                            git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$PROJECT_PATH"
+                                          else
+                                            echo "Updating repo..."
+                                            cd "$PROJECT_PATH"
+                                            git fetch origin main
+                                            git reset --hard origin/main
+                                          fi
+
+
+
+                                          echo "----------------------------------------------"
+                                          echo "Staging system..."
+                                          cd "$PROJECT_PATH"
+                                          bash ./scripts/install-system-dependencies.sh
+                                          bash ./scripts/setup-postgres-account.sh
+
+                                          echo "Ensuring media directories exist..."
+
+                                          sudo mkdir -p $ORIGINAL_SCALE_IMAGE_FILE_PATH $DOWN_SCALE_IMAGE_FILE_PATH $FULL_SCALE_IMAGE_FILE_PATH $TEMP_IMAGE_FILE_PATH
+                                          
+                                          
+                                          
+                                          echo "----------------------------------------------"
+                                          echo "Staging nginx..."
+
+                                          bash ./scripts/generate-nginx-config.sh
+
+                                          echo "----------------------------------------------"
+                                          echo "Updating backend .env..."
+                                          cat > ./backend/.env <<EOF
+                                          DB_USER=$DB_USER
+                                          DB_PASS=$DB_PASS
+                                          DB_NAME=$DB_NAME
+                                          DB_HOST=$DB_HOST
+                                          DB_PORT=$DB_PORT
+                                          API_PORT=$API_PORT
+                                          DOWN_SCALE_IMAGE_FILE_PATH=$DOWN_SCALE_IMAGE_FILE_PATH
+                                          FULL_SCALE_IMAGE_FILE_PATH=$FULL_SCALE_IMAGE_FILE_PATH
+                                          ORIGINAL_SCALE_IMAGE_FILE_PATH=$ORIGINAL_SCALE_IMAGE_FILE_PATH
+                                          TEMP_IMAGE_FILE_PATH=$TEMP_IMAGE_FILE_PATH
+                                          EOF
+
+                                          echo "Updating frontend .env..."
+                                          cat > ./frontend/.env <<EOF
+                                          REACT_APP_API_URL=$REACT_APP_API_URL
+                                          REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
+                                          EOF
+
+                                          echo "----------------------------------------------"
+                                          echo "Deploying frontend application..."
+                                          bash ./scripts/deploy-frontend.sh
+
+                                          echo "Deploying backend application..."
+                                          bash ./scripts/deploy-backend.sh

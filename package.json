@@ -1,0 +1,27 @@
+{
+        "name": "gaby-shared-album",
+        "private": true,
+        "workspaces": [
+                "frontend",
+                "backend"
+        ],
+        "scripts": {
+                "preinstall": "npm install --workspaces",
+
+                "test:backend": "npm run test --workspace backend",
+
+                "migrate:create": "npm run migrate:create --workspace backend",
+                "migrate:up": "npm run migrate:up --workspace backend",
+                "migrate:down": "npm run migrate:down --workspace backend",
+                "migrate:status": "npm run migrate:status --workspace backend",
+                "migrate:help": "npm run migrate:help --workspace backend",
+                
+                "test:frontend": "npm run test --workspace frontend",
+                "eject:frontend": "npm run eject --workspace frontend",
+                "start:frontend": "npm run start --workspace frontend",
+                "build:frontend": "npm run build --workspace frontend",
+
+                "ci": "echo \"Error: no ci specified\" && exit 1",
+                "lint": "echo \"Error: no lint specified\" && exit 1"
+        }
+}
