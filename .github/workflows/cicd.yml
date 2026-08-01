@@ -41,7 +41,7 @@ jobs:
                                   path: frontend/build
                         
 
-                        - name: Deploy frontend and backend to prod servers
+                        - name: Ensure folder for build exists
                           uses: appleboy/ssh-action@v0.1.10
                           with:
                                   host: ${{ secrets.SSH_IP }}
