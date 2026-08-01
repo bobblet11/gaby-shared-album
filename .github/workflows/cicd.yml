@@ -50,7 +50,7 @@ jobs:
                                   port: ${{ secrets.SSH_PORT }}
                                   script: |
               
-                                          sudo mkdir -p /var/www/${{ github.event.repository.name }}/build"
+                                          sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
