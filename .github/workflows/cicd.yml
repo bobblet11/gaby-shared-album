@@ -11,39 +11,44 @@ jobs:
         ci-lint-build:
                 runs-on: ubuntu-latest
                 steps:
-                        - name: Install, lint, build
-                          run: |
-                            npm ci
-                            npm run lint
-                            npm run build --workspace frontend
+                        - name: Checkout repo
+                          uses: actions/checkout@v4
+
+                        - name: Install all dependencies
+                          run: npm ci
+
+                        - name: Lint frontend
+                          run: npm run lint --workspace frontend
+
+                        - name: Build frontend
+                          run: npm run build --workspace frontend
 
                         - name: Upload build artifact
                           uses: actions/upload-artifact@v4
                           with:
-                            name: react-build
-                            path: frontend/build
+                                  name: react-build
+                                  path: frontend/build
 
         deploy:
                 runs-on: ubuntu-latest
                 environment: prod
                 needs: ci-lint-build
                 steps:
-
                         - name: Download build artifact
                           uses: actions/download-artifact@v4
                           with:
-                            name: react-build
-                            path: frontend/build
+                                  name: react-build
+                                  path: frontend/build
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
                           with:
-                            host: ${{ secrets.SSH_IP }}
-                            username: ${{ secrets.SSH_USER }}
-                            key: ${{ secrets.SSH_PRIVATE_KEY }}
-                            port: ${{ secrets.SSH_PORT }}
-                            source: "frontend/build/*"
-                            target: "/var/www/${{ github.event.repository.name }}/build"
+                                  host: ${{ secrets.SSH_IP }}
+                                  username: ${{ secrets.SSH_USER }}
+                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  port: ${{ secrets.SSH_PORT }}
+                                  source: "frontend/build/*"
+                                  target: "/var/www/${{ github.event.repository.name }}/build"
 
                         - name: Deploy frontend and backend to prod servers
                           uses: appleboy/ssh-action@v0.1.10
@@ -81,7 +86,7 @@ jobs:
                                           export NGINX_CONFIG_SRC="${PROJECT_PATH}/nginx/${REPO_NAME}"
                                           export NGINX_CONFIG_DST="/etc/nginx/sites-available/${REPO_NAME}"
                                           export NGINX_ENABLED_PATH="/etc/nginx/sites-enabled/${REPO_NAME}"
-                                          
+
                                           export REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}"
                                           export REACT_APP_FEATURE_FLAG="${{ vars.REACT_APP_FEATURE_FLAG }}"
 
@@ -115,9 +120,9 @@ jobs:
                                           echo "Ensuring media directories exist..."
 
                                           sudo mkdir -p $ORIGINAL_SCALE_IMAGE_FILE_PATH $DOWN_SCALE_IMAGE_FILE_PATH $FULL_SCALE_IMAGE_FILE_PATH $TEMP_IMAGE_FILE_PATH
-                                          
-                                          
-                                          
+
+
+
                                           echo "----------------------------------------------"
                                           echo "Staging nginx..."
 
