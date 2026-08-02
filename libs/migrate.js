@@ -17,7 +17,9 @@
 const fs = require("fs");
 const path = require("path");
 const { Client } = require("pg");
-const db = require("./../db"); 
+const db = require(path.resolve(__dirname, "../backend/db"));
+require("dotenv").config({ path: path.resolve(__dirname, "../backend/.env") });
+
 
 // Configuration
 const config = {

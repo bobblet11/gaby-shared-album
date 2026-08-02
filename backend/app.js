@@ -7,7 +7,10 @@ const crypto = require("crypto");
 const multer = require("multer");
 const express = require("express");
 const bodyParser = require("body-parser");
-const db = require("./db"); // make sure db.js exports connect()
+
+const db = require(path.resolve(__dirname, "./db"));
+require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+
 const PORT = process.env.API_PORT;
 const app = express();
 
