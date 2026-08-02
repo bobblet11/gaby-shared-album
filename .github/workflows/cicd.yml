@@ -184,10 +184,10 @@ jobs:
                                           DB_HOST=$DB_HOST
                                           DB_PORT=$DB_PORT
                                           API_PORT=$API_PORT
-                                          DOWN_SCALE_IMAGE_FILE_PATH=$DOWN_SCALE_IMAGE_FILE_PATH
-                                          FULL_SCALE_IMAGE_FILE_PATH=$FULL_SCALE_IMAGE_FILE_PATH
-                                          ORIGINAL_SCALE_IMAGE_FILE_PATH=$ORIGINAL_SCALE_IMAGE_FILE_PATH
-                                          TEMP_IMAGE_FILE_PATH=$TEMP_IMAGE_FILE_PATH
+                                          DOWN_SCALE_IMAGE_FILE_PATH="uploads/${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
+                                          FULL_SCALE_IMAGE_FILE_PATH="uploads/${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME }}"
+                                          ORIGINAL_SCALE_IMAGE_FILE_PATH="uploads/${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
+                                          TEMP_IMAGE_FILE_PATH="uploads/${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"
                                           EOF
 
 
