@@ -93,7 +93,7 @@ jobs:
                                           export DOWN_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
                                           export FULL_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME}}"
                                           export ORIGINAL_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
-                                          export TEMP_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.TEMP_IMAGE_FOLDER_NAME }}"
+                                          export TEMP_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"
 
                                           # export FRONTEND_BUILD_SRC="${PROJECT_PATH}/frontend/build"
                                           export FRONTEND_BUILD_DST="/var/www/${REPO_NAME}/build"
