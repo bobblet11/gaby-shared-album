@@ -164,7 +164,8 @@ jobs:
                                           ORIGINAL_SCALE_IMAGE_FILE_PATH=$ORIGINAL_SCALE_IMAGE_FILE_PATH
                                           TEMP_IMAGE_FILE_PATH=$TEMP_IMAGE_FILE_PATH
                                           EOF
-
+                                          
+                                          echo "----------------------------------------------"
                                           echo "Updating frontend .env..."
                                           sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
                                           sudo touch "$FRONTEND_ENV_PATH"
