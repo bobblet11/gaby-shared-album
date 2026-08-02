@@ -6,7 +6,7 @@ echo "Generating NGINX config for ${REPO_NAME} at ${NGINX_CONFIG_SRC}..."
 sudo mkdir -p "$(dirname "$NGINX_CONFIG_SRC")"
 sudo touch "$NGINX_CONFIG_SRC"
 
-cat > "${NGINX_CONFIG_SRC}" <<EOF
+sudo cat > "${NGINX_CONFIG_SRC}" <<EOF
 server {
     listen 80;
     listen [::]:80;
