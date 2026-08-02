@@ -5,6 +5,8 @@ echo "Generating NGINX config for ${REPO_NAME} at ${NGINX_CONFIG_SRC}..."
 
 sudo mkdir -p "$(dirname "$NGINX_CONFIG_SRC")"
 sudo touch "$NGINX_CONFIG_SRC"
+sudo chown -R $USER:$USER "$(dirname "$NGINX_CONFIG_SRC")"
+
 
 sudo cat > "${NGINX_CONFIG_SRC}" <<EOF
 server {
