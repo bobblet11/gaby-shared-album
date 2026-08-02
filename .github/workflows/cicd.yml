@@ -20,8 +20,19 @@ jobs:
                         - name: Lint project
                           run: npm run lint
 
+                        - name: Create production env file
+                          run: |
+                            FRONTEND_ENV_PATH="./frontend/.env.production"
+                            echo "Updating frontend .env.production..."
+                            mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
+                            cat > "$FRONTEND_ENV_PATH" <<EOF
+                            REACT_APP_API_URL=${{ vars.REACT_APP_API_URL }}
+                            REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}
+                            EOF
+
                         - name: Build frontend
-                          run: npm run build --workspace frontend
+                          run: npm run build --workspace frontend -- --dotenv=frontend/.env.production
+
 
                         - name: Upload build artifact
                           uses: actions/upload-artifact@v4
