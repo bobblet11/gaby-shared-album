@@ -38,7 +38,7 @@ jobs:
                           uses: actions/download-artifact@v4
                           with:
                                   name: react-build
-                                  path: react-build
+                                  path: build
                         
 
                         - name: Ensure folder for build exists
@@ -61,7 +61,7 @@ jobs:
                                   username: ${{ secrets.SSH_USER }}
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   port: ${{ secrets.SSH_PORT }}
-                                  source: "react-build"
+                                  source: "build"
                                   target: "/var/www/${{ github.event.repository.name }}"
 
                         - name: Deploy frontend and backend to prod servers
