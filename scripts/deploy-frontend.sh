@@ -12,7 +12,16 @@ echo "----------------------------------------------"
 echo "Updating NGINX..."
 
 echo "Copying ${REPO_NAME} to sites-available..."
-SOURCE_CONFIG=$(ls "${PROJECT_PATH}/infra/nginx/*" | head -n 1)
+for f in "$PROJECT_PATH"/infra/nginx/*; do
+  SOURCE_CONFIG="$f"
+  break
+done
+
+if [ ! -f "$SOURCE_CONFIG" ]; then
+  echo "No NGINX config found at $PROJECT_PATH/infra/nginx... generate-nginx-config.sh must have failed..."
+  exit 1
+fi
+
 sudo cp "${SOURCE_CONFIG}" "/etc/nginx/sites-available/${REPO_NAME}"
 
 echo "Linking .../sites-available/${REPO_NAME} to sites-enabled..."
