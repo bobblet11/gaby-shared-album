@@ -29,9 +29,6 @@ jobs:
                             REACT_APP_API_URL=${{ vars.REACT_APP_API_URL }}
                             REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}
                             EOF
-                                echo "---- .env.production contents ----"
-                                cat "$FRONTEND_ENV_PATH"
-                                echo "----------------------------------"
 
                         - name: Build frontend
                           run: |
