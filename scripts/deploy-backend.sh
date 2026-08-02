@@ -10,7 +10,7 @@ set -a
 source ./backend/.env
 set +a
 
-# ---------------------------------------------------------------------------- #
+echo "----------------------------------------------"
 echo "Updating Postgres..."
 
 echo "Checking Postgres..."
@@ -25,19 +25,19 @@ npm run migrate:status
 echo "Running database migration..."
 npm run migrate:up
 
-# ---------------------------------------------------------------------------- #
+echo "----------------------------------------------"
 
 echo "Installing backend dependencies..."
-cd backend
-npm ci --production
-cd ..
+npm run ci:backend
+
+echo "----------------------------------------------"
 
 echo "Restarting backend service with PM2..."
 BACKEND_APP_NAME="${REPO_NAME}.backend"
-if pm2 describe "$BACKEND_APP_NAME" >/dev/null; then
-  pm2 restart "$BACKEND_APP_NAME" --update-env
+if pm2 describe "${BACKEND_APP_NAME}" >/dev/null; then
+  pm2 restart "${BACKEND_APP_NAME}" --update-env
 else
-  pm2 start ./backend/app.js --name "$BACKEND_APP_NAME"
+  pm2 start ./backend/app.js --name "${BACKEND_APP_NAME}"
 fi
 
 
