@@ -1,7 +1,10 @@
 #!/bin/bash
 # generate-nginx-config.sh
 set -euo pipefail
-echo "Generating NGINX config for ${REPO_NAME}..."
+echo "Generating NGINX config for ${REPO_NAME} at ${NGINX_CONFIG_SRC}..."
+
+sudo mkdir -p "$(dirname "$NGINX_CONFIG_SRC")"
+sudo touch "$NGINX_CONFIG_SRC"
 
 cat > "${NGINX_CONFIG_SRC}" <<EOF
 server {
@@ -26,8 +29,10 @@ server {
     }
 
     location /media/ {
-        alias ${STATIC_MEDIA_PATH}/uploads/;
+        alias ${STATIC_MEDIA_PATH}/;
         autoindex off;
     }
 }
 EOF
+
+echo "Generated NGINX config"
