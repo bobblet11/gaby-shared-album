@@ -136,8 +136,9 @@ jobs:
                                           bash ./scripts/install-system-dependencies.sh
                                           bash ./scripts/setup-postgres-account.sh
 
+                                          
+                                          
                                           echo "Ensuring media directories exist..."
-
                                           sudo mkdir -p $ORIGINAL_SCALE_IMAGE_FILE_PATH $DOWN_SCALE_IMAGE_FILE_PATH $FULL_SCALE_IMAGE_FILE_PATH $TEMP_IMAGE_FILE_PATH
 
 
