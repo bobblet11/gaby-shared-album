@@ -17,7 +17,7 @@ echo "Checking Postgres..."
 sudo systemctl is-active --quiet postgresql || sudo systemctl restart postgresql
 
 echo "Testing Postgres connection..."
-node ./scripts/test_db.js
+node ./scripts/test-postgres-connection.js
 
 echo "Checking database migration status..."
 npm run migrate:status
