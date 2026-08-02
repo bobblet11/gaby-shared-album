@@ -8,7 +8,7 @@ set -a
 source ./frontend/.env
 set +a
 
-# ---------------------------------------------------------------------------- #
+echo "----------------------------------------------"
 echo "Updating NGINX..."
 
 echo "Copying ${REPO_NAME} to sites-available..."

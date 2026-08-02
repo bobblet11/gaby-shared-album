@@ -1,6 +1,5 @@
 #!/bin/bash
 # setup-postgres-account.sh
-
 set -euo pipefail
 echo "Setting up Postgres user and database..."
 
