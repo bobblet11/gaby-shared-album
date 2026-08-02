@@ -105,6 +105,9 @@ jobs:
                                           export REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}"
                                           export REACT_APP_FEATURE_FLAG="${{ vars.REACT_APP_FEATURE_FLAG }}"
 
+                                          export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env"
+                                          export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env"
+
                                           echo "Environment variables exported."
 
 
@@ -145,8 +148,11 @@ jobs:
                                           bash ./scripts/generate-nginx-config.sh
 
                                           echo "----------------------------------------------"
+                                          sudo mkdir -p "$(dirname "$BACKEND_ENV_PATH")"
+                                          sudo touch "$BACKEND_ENV_PATH"
+
                                           echo "Updating backend .env..."
-                                          cat > ./backend/.env <<EOF
+                                          cat > ${BACKEND_ENV_PATH} <<EOF
                                           DB_USER=$DB_USER
                                           DB_PASS=$DB_PASS
                                           DB_NAME=$DB_NAME
@@ -160,7 +166,9 @@ jobs:
                                           EOF
 
                                           echo "Updating frontend .env..."
-                                          cat > ./frontend/.env <<EOF
+                                          sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
+                                          sudo touch "$FRONTEND_ENV_PATH"
+                                          cat > ${FRONTEND_ENV_PATH} <<EOF
                                           REACT_APP_API_URL=$REACT_APP_API_URL
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
                                           EOF
