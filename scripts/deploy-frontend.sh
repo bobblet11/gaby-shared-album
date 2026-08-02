@@ -30,6 +30,9 @@ sudo ln -sf "/etc/nginx/sites-available/${REPO_NAME}" "/etc/nginx/sites-enabled/
 echo "Testing configuration..."
 sudo nginx -t
 
+echo "Deleting defualt NGINX configuration..."
+sudo rm -rf /etc/nginx/sites-enabled/default
+
 echo "Restarting NGINX..."
 sudo systemctl reload nginx
 
