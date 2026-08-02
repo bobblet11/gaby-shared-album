@@ -51,7 +51,9 @@ jobs:
                                   script: |
               
                                           sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
-                                          sudo chown "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
+                                          sudo chown -R "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
+                                          sudo ls -ld /var/www/${{ github.event.repository.name }}/build
+
 
 
                         - name: Upload build to server
