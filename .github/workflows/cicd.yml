@@ -98,7 +98,7 @@ jobs:
                                           # export FRONTEND_BUILD_SRC="${PROJECT_PATH}/frontend/build"
                                           # export FRONTEND_BUILD_DST="/var/www/${REPO_NAME}/build"
 
-                                          export NGINX_CONFIG_SRC="${PROJECT_PATH}/nginx/${REPO_NAME}"
+                                          export NGINX_CONFIG_SRC="${PROJECT_PATH}/infra/nginx/${REPO_NAME}"
                                           export NGINX_CONFIG_DST="/etc/nginx/sites-available/${REPO_NAME}"
                                           export NGINX_ENABLED_PATH="/etc/nginx/sites-enabled/${REPO_NAME}"
 
