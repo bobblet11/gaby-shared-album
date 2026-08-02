@@ -96,7 +96,7 @@ jobs:
                                           export TEMP_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.TEMP_IMAGE_FOLDER_NAME }}"
 
                                           # export FRONTEND_BUILD_SRC="${PROJECT_PATH}/frontend/build"
-                                          # export FRONTEND_BUILD_DST="/var/www/${REPO_NAME}/build"
+                                          export FRONTEND_BUILD_DST="/var/www/${REPO_NAME}/build"
 
                                           export NGINX_CONFIG_SRC="${PROJECT_PATH}/infra/nginx/${REPO_NAME}"
                                           export NGINX_CONFIG_DST="/etc/nginx/sites-available/${REPO_NAME}"
@@ -164,7 +164,7 @@ jobs:
                                           ORIGINAL_SCALE_IMAGE_FILE_PATH=$ORIGINAL_SCALE_IMAGE_FILE_PATH
                                           TEMP_IMAGE_FILE_PATH=$TEMP_IMAGE_FILE_PATH
                                           EOF
-                                          
+
                                           echo "----------------------------------------------"
                                           echo "Updating frontend .env..."
                                           sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
