@@ -38,7 +38,7 @@ jobs:
                           uses: actions/download-artifact@v4
                           with:
                                   name: react-build
-                                  path: frontend/build
+                                  path: react-build
                         
 
                         - name: Ensure folder for build exists
@@ -51,7 +51,8 @@ jobs:
                                   script: |
               
                                           sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
-                                          sudo chown deploy-github:deploy-github /var/www/${{ github.event.repository.name }}
+                                          sudo chown "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
+
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
@@ -60,7 +61,7 @@ jobs:
                                   username: ${{ secrets.SSH_USER }}
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   port: ${{ secrets.SSH_PORT }}
-                                  source: "frontend/build"
+                                  source: "react-build"
                                   target: "/var/www/${{ github.event.repository.name }}"
 
                         - name: Deploy frontend and backend to prod servers
