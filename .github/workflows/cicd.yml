@@ -29,9 +29,14 @@ jobs:
                             REACT_APP_API_URL=${{ vars.REACT_APP_API_URL }}
                             REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}
                             EOF
+                                echo "---- .env.production contents ----"
+                                cat "$FRONTEND_ENV_PATH"
+                                echo "----------------------------------"
 
                         - name: Build frontend
-                          run: NODE_ENV=production npm run build --workspace frontend
+                          run: |
+                            NODE_ENV=production npm run build --workspace frontend
+
 
 
                         - name: Upload build artifact
@@ -204,6 +209,6 @@ jobs:
                                           echo "Deploying frontend application..."
                                           bash ./scripts/deploy-frontend.sh
 
-                                          
+
                                           echo "Deploying backend application..."
                                           bash ./scripts/deploy-backend.sh
