@@ -5,11 +5,11 @@
         "scripts": {
                 "start": "node app.js",
                 "test": "echo \"Error: no test specified\" && exit 1",
-                "migrate:create": "node ../libs/migrate.js create",
-                "migrate:up": "node ../libs/migrate.js up",
-                "migrate:down": "node ../libs/migrate.js down",
-                "migrate:status": "node ../libs/migrate.js status",
-                "migrate:help": "node ../libs/migrate.js help",
+                "migrate:create": "node ./libs/migrate.js create",
+                "migrate:up": "node ./libs/migrate.js up",
+                "migrate:down": "node ./libs/migrate.js down",
+                "migrate:status": "node ./libs/migrate.js status",
+                "migrate:help": "node ./libs/migrate.js help",
                 "lint": "eslint ."
         },
         "author": "",

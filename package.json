@@ -15,7 +15,7 @@
                 "test:frontend": "npm run test --workspace frontend",
                 "eject:frontend": "npm run eject --workspace frontend",
                 "start:frontend": "npm run start --workspace frontend",
-                "start:backend": "npm run start --workspace frontend",
+                "start:backend": "NODE_PATH=./backend/node_modules npm run start --workspace frontend",
                 "build:frontend": "npm run build --workspace frontend",
                 "lint": "npm run lint --workspaces",
                 "ci:backend": "npm ci --production --workspace backend"
