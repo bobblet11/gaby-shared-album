@@ -11,6 +11,11 @@ source ./backend/.env
 set +a
 
 echo "----------------------------------------------"
+echo "Installing backend dependencies..."
+npm run ci:backend
+
+
+echo "----------------------------------------------"
 echo "Updating Postgres..."
 
 echo "Checking Postgres..."
@@ -24,11 +29,6 @@ npm run migrate:status
 
 echo "Running database migration..."
 npm run migrate:up
-
-echo "----------------------------------------------"
-
-echo "Installing backend dependencies..."
-npm run ci:backend
 
 echo "----------------------------------------------"
 
