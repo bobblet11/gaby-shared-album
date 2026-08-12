@@ -23,19 +23,23 @@ jobs:
 
                         - name: Create production env file
                           run: |
-                            FRONTEND_ENV_PATH="./frontend/.env.production"
-                            echo "Updating frontend .env.production..."
-                            mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
-                            cat > "$FRONTEND_ENV_PATH" <<EOF
-                            REACT_APP_API_URL=${{ vars.REACT_APP_API_URL }}
-                            REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}
-                            EOF
+                                  FRONTEND_ENV_PATH="./frontend/.env.production"
+                                  echo "Updating frontend .env.production..."
+                                  mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
+                                  echo "REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}" >> $FRONTEND_ENV_PATH
+                                  echo "REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}" >> $FRONTEND_ENV_PATH
+
+                        - name: Show frontend .env.production
+                          run: cat ./frontend/.env.production
 
                         - name: Build frontend
                           run: |
-                            NODE_ENV=production npm run build --workspace frontend
+                                  NODE_ENV=production npm run build --workspace frontend
 
-
+                        - name: Inspect built frontend for env vars
+                          run: |
+                                  grep -R "REACT_APP_API_URL" frontend/build || true
+                                  grep -R "REACT_APP_FEATURE_FLAG" frontend/build || true
 
                         - name: Upload build artifact
                           uses: actions/upload-artifact@v4
@@ -53,7 +57,6 @@ jobs:
                           with:
                                   name: react-build
                                   path: build
-                        
 
                         - name: Ensure folder for build exists
                           uses: appleboy/ssh-action@v0.1.10
@@ -63,11 +66,9 @@ jobs:
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   port: ${{ secrets.SSH_PORT }}
                                   script: |
-              
+
                                           sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
                                           sudo chown -R "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
-
-
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
@@ -78,8 +79,6 @@ jobs:
                                   port: ${{ secrets.SSH_PORT }}
                                   source: "build"
                                   target: "/var/www/${{ github.event.repository.name }}"
-
-
 
                         - name: Deploy frontend and backend to prod servers
                           uses: appleboy/ssh-action@v0.1.10
@@ -159,7 +158,7 @@ jobs:
                                           bash ./scripts/install-system-dependencies.sh
                                           bash ./scripts/setup-postgres-account.sh
 
-                                          
+
                                           echo "Ensuring media directories exist..."
                                           sudo mkdir -p $ORIGINAL_SCALE_IMAGE_FILE_PATH $DOWN_SCALE_IMAGE_FILE_PATH $FULL_SCALE_IMAGE_FILE_PATH $TEMP_IMAGE_FILE_PATH
 
@@ -184,10 +183,13 @@ jobs:
                                           DB_HOST=$DB_HOST
                                           DB_PORT=$DB_PORT
                                           API_PORT=$API_PORT
-                                          DOWN_SCALE_IMAGE_FILE_PATH="uploads/${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
-                                          FULL_SCALE_IMAGE_FILE_PATH="uploads/${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME }}"
-                                          ORIGINAL_SCALE_IMAGE_FILE_PATH="uploads/${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
-                                          TEMP_IMAGE_FILE_PATH="uploads/${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"
+
+                                          PUBLIC_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}
+                                          BASE_MEDIA_PATH=$STATIC_MEDIA_PATH
+                                          DOWN_SCALE_IMAGE_FOLDER_NAME="${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
+                                          FULL_SCALE_IMAGE_FOLDER_NAME="${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME }}"
+                                          ORIGINAL_SCALE_IMAGE_FOLDER_NAME="${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
+                                          TEMP_SCALE_IMAGE_FOLDER_NAME="${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"
                                           EOF
 
 
@@ -197,7 +199,7 @@ jobs:
                                           sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
                                           sudo touch "$FRONTEND_ENV_PATH"
                                           cat > ${FRONTEND_ENV_PATH} <<EOF
-                                          REACT_APP_API_URL=$REACT_APP_API_URL
+                                          REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
                                           EOF
 
