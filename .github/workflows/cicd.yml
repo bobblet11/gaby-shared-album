@@ -62,10 +62,11 @@ jobs:
                         - name: Ensure folder for build exists
                           uses: appleboy/ssh-action@v0.1.10
                           with:
-                                  host: ${{ secrets.SSH_IP }}
-                                  username: ${{ secrets.SSH_USER }}
+                                  host: ${{ secrets.TARGET_HOST }}
+                                  username: ${{ secrets.TARGET_USER }}
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  port: ${{ secrets.SSH_PORT }}
+                                  port: ${{ secrets.TARGET_PORT }}
+                                  proxy_jump: "${{ secrets.GATEWAY_USER }}@${{ secrets.GATEWAY_HOST }}:${{ secrets.GATEWAY_PORT }}"
                                   script: |
 
                                           sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
@@ -74,20 +75,22 @@ jobs:
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
                           with:
-                                  host: ${{ secrets.SSH_IP }}
-                                  username: ${{ secrets.SSH_USER }}
+                                  host: ${{ secrets.TARGET_HOST }}
+                                  username: ${{ secrets.TARGET_USER }}
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  port: ${{ secrets.SSH_PORT }}
+                                  port: ${{ secrets.TARGET_PORT }}
+                                  proxy_jump: "${{ secrets.GATEWAY_USER }}@${{ secrets.GATEWAY_HOST }}:${{ secrets.GATEWAY_PORT }}"
                                   source: "build"
                                   target: "/var/www/${{ github.event.repository.name }}"
 
                         - name: Deploy frontend and backend to prod servers
                           uses: appleboy/ssh-action@v0.1.10
                           with:
-                                  host: ${{ secrets.SSH_IP }}
-                                  username: ${{ secrets.SSH_USER }}
+                                  host: ${{ secrets.TARGET_HOST }}
+                                  username: ${{ secrets.TARGET_USER }}
                                   key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  port: ${{ secrets.SSH_PORT }}
+                                  port: ${{ secrets.TARGET_PORT }}
+                                  proxy_jump: "${{ secrets.GATEWAY_USER }}@${{ secrets.GATEWAY_HOST }}:${{ secrets.GATEWAY_PORT }}"
                                   script: |
                                           echo "----------------------------------------------"
                                           echo "Exporting environment variables..."
