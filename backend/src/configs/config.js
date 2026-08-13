@@ -1,10 +1,6 @@
 const path = require("path");
 require("dotenv").config();
 
-const apiDomain = process.env.PUBLIC_API_DOMAIN;
-const apiPort = parseInt(process.env.API_PORT, 10);
-const domain = apiDomain && apiPort ? `${apiDomain}:${apiPort}` : "public_domain";
-
 
 const config = {
         db: {

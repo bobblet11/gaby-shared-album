@@ -1,8 +1,3 @@
-const apiDomain = process.env.REACT_APP_API_DOMAIN;
-const apiPort = parseInt(process.env.REACT_APP_API_PORT, 10);
-const domain = apiDomain && apiPort ? `${apiDomain}:${apiPort}` : "public_domain";
-
-
 export const config = {
         api: {
                 domain: process.env.REACT_APP_API_URL || "http://localhost:8080",
