@@ -29,7 +29,6 @@ jobs:
                                   mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
                                   echo "REACT_APP_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}" >> $FRONTEND_ENV_PATH
                                   echo "REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}" >> $FRONTEND_ENV_PATH
-                                  echo "REACT_APP_API_PORT=${{  vars.API_PORT  }}" >> $FRONTEND_ENV_PATH
 
                         - name: Show frontend .env.production
                           run: cat ./frontend/.env.production
@@ -201,10 +200,9 @@ jobs:
                                           DB_NAME=$DB_NAME
                                           DB_HOST=$DB_HOST
                                           DB_PORT=$DB_PORT
-
                                           API_PORT=$API_PORT
+
                                           PUBLIC_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}
-                                          
                                           BASE_MEDIA_PATH=$STATIC_MEDIA_PATH
                                           DOWN_SCALE_IMAGE_FOLDER_NAME="${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
                                           FULL_SCALE_IMAGE_FOLDER_NAME="${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME }}"
@@ -220,7 +218,6 @@ jobs:
                                           sudo touch "$FRONTEND_ENV_PATH"
                                           sudo cat > ${FRONTEND_ENV_PATH} <<EOF
                                           REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}
-                                          REACT_APP_API_PORT=$API_PORT
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
                                           EOF
 

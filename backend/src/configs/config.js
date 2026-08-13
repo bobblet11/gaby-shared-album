@@ -16,7 +16,7 @@ const config = {
         },
 
         api: {
-                domain: domain,
+                domain: process.env.PUBLIC_API_DOMAIN || "public_domain",
                 port: parseInt(process.env.API_PORT, 10) || 3000,
         },
 

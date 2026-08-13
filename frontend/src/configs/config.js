@@ -5,9 +5,9 @@ const domain = apiDomain && apiPort ? `${apiDomain}:${apiPort}` : "public_domain
 
 export const config = {
         api: {
-                domain: domain,
+                domain: process.env.REACT_APP_API_URL || "http://localhost:8080",
                 use_api: process.env.REACT_APP_FEATURE_FLAG === "true" || false,
-                max_files_per_upload: parseInt(process.env.process.env.REACT_APP_MAX_FILE_UPLOAD, 10) || 15,
+                max_files_per_upload: parseInt(process.env.process.env.REACT_APP_MAX_FILE_UPLOAD , 10)|| 15,
         },
 };
 
