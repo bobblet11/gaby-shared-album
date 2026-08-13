@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PhotoBoard from "../components/PhotoBoard";
 import { useNavigate } from "react-router-dom";
 import { usePhotos } from "../hooks/usePhotos";
-
-
 
 export default function HomePage() {
         const { transformedPhotos, isFetchingPhotos } = usePhotos();
@@ -26,9 +24,9 @@ export default function HomePage() {
                                         Upload
                                 </button>
                         </header>
-
                         <main className="home-main">
-                                <PhotoBoard photos={transformedPhotos} />
+                                {isFetchingPhotos && <div className="spinner" style={{ margin: "4rem auto" }}></div>}
+                                {!isFetchingPhotos && <PhotoBoard photos={transformedPhotos} />}
                         </main>
                 </div>
         );
