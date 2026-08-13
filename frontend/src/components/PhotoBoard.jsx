@@ -12,6 +12,7 @@ function samePhoto(a, b) {
         if (!a || !b) return false;
         return a.title === b.title && a.caption === b.caption && a.image_endpoint === b.image_endpoint;
 }
+
 export default function PhotoBoard({ photos = [] }) {
         const boardRef = useRef(null);
         const [openPhoto, setOpenPhoto] = useState(null);
@@ -54,30 +55,6 @@ export default function PhotoBoard({ photos = [] }) {
 
         const API_URL = process.env.REACT_APP_API_URL;
         const USE_API_URL = process.env.REACT_APP_FEATURE_FLAG === "true";
-        const items = useMemo(() => {
-                const count = photos.length;
-
-                if (count === 0) return [];
-
-                return photos.map((p) => {
-                        // Very minor random deviations for subtle scattered look
-                        const offsetX = rand(-3, 3); // ±3px offset
-                        const offsetY = rand(-3, 3); // ±3px offset
-                        const rotation = rand(-2, 2); // ±2 degrees rotation
-                        const size = rand(0.98, 1.02); // ±2% size variation
-
-                        const zIndex = Math.floor(rand(1, 4));
-
-                        return {
-                                ...p,
-                                rotation,
-                                size,
-                                zIndex,
-                                offsetX,
-                                offsetY,
-                        };
-                });
-        }, [photos]);
 
         const validateInputs = (title, caption) => {
                 if (title.length > 100) {
@@ -292,7 +269,7 @@ export default function PhotoBoard({ photos = [] }) {
                         )}
 
                         <div ref={boardRef} className="photo-board">
-                                {items.map((photo) => (
+                                {photos.map((photo) => (
                                         <Photo key={photo.id} {...photo} onOpenPhoto={onOpenPhoto} />
                                 ))}
                         </div>
@@ -301,7 +278,7 @@ export default function PhotoBoard({ photos = [] }) {
 }
 
 PhotoBoard.propTypes = {
-        photos: PropTypes.array(
+        photos: PropTypes.arrayOf(
                 PropTypes.shape({
                         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
                         title: PropTypes.string.isRequired,
@@ -309,6 +286,11 @@ PhotoBoard.propTypes = {
                         caption: PropTypes.string,
                         image_endpoint: PropTypes.string.isRequired,
                         placeholder_endpoint: PropTypes.string,
+                        rotation: PropTypes.number.isRequired,
+                        size: PropTypes.number.isRequired,
+                        zIndex: PropTypes.number.isRequired,
+                        offsetX: PropTypes.number.isRequired,
+                        offsetY: PropTypes.number.isRequired,
                 }),
         ).isRequired,
 };
