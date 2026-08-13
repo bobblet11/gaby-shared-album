@@ -75,6 +75,8 @@ jobs:
 
                                           sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
                                           sudo chown -R "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
+                                          sudo chown -R "$USER:$USER" "/srv/${{ github.event.repository.name }}"
+
 
                         - name: Upload build to server
                           uses: appleboy/scp-action@v0.1.7
