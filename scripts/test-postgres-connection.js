@@ -1,9 +1,6 @@
 // run: node scripts/test-db.js
 const path = require("path");
-
 const db = require(path.resolve(__dirname, "../backend/db"));
-require("dotenv").config({ path: path.resolve(__dirname, "../backend/.env") });
-
 
 (async () => {
         try {
