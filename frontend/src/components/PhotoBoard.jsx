@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {useRef} from "react";
 import Photo from "./Photo";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import DOMPurify from "dompurify";
 import PropTypes from "prop-types";
 import { usePhotoActions } from "../hooks/usePhotoActions";
 import { usePhotoDetail } from "../hooks/usePhotoDetail";

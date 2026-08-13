@@ -1,4 +1,4 @@
-const config = {
+export const config = {
         api: {
                 domain: process.env.REACT_APP_API_URL || "http://localhost:8080",
                 use_api: process.env.REACT_APP_FEATURE_FLAG === "true" || false,
@@ -36,5 +36,3 @@ function maskConfig(obj, hidden) {
 console.log("=== Application Configuration ===");
 console.log(JSON.stringify(maskConfig(config, hiddenKeys), null, 2));
 console.log("=================================");
-
-module.exports = config;

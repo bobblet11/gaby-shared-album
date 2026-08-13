@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import config from "../configs/config.js";
 import { uploadPhoto } from "../api/photos.js";
 import DOMPurify from "dompurify";
@@ -68,7 +68,7 @@ export function usePhotoUpload() {
                                         file.forEach((f) => formData.append("image", f));
                                 }
 
-                                const response = await uploadPhoto(formData);
+                                await uploadPhoto(formData);
                                 
                         }
                         alert("Successfully uploaded photo");
@@ -122,5 +122,5 @@ export function usePhotoUpload() {
                 setCaption(newCaption);
         };
 
-        return { title, caption, file, dragOver, isMultipleFilesSelected, previewUrls, handleSubmit, isUploading, onFileDrop, onFileDragOver, onFileDragLeave, onSelectedFilesChange, updateTitle, updateCaption };
+        return { title, caption, dragOver, isMultipleFilesSelected, previewUrls, handleSubmit, isUploading, onFileDrop, onFileDragOver, onFileDragLeave, onSelectedFilesChange, updateTitle, updateCaption };
 }

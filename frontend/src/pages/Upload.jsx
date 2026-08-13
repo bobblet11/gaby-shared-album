@@ -1,13 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import DOMPurify from "dompurify";
 import { usePhotoUpload } from "../hooks/usePhotosUpload";
 import config from "../configs/config";
 
 export default function UploadPage() {
         const navigate = useNavigate();
 
-        const { title, caption, file, dragOver, isMultipleFilesSelected, previewUrls, handleSubmit, isUploading, onFileDrop, onFileDragOver, onFileDragLeave, onSelectedFilesChange, updateTitle, updateCaption } = usePhotoUpload();
+        const { title, caption, dragOver, isMultipleFilesSelected, previewUrls, handleSubmit, isUploading, onFileDrop, onFileDragOver, onFileDragLeave, onSelectedFilesChange, updateTitle, updateCaption } = usePhotoUpload();
 
         const goToHomePage = () => {
                 try {

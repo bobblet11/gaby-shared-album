@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import config from "../configs/config";
 import DOMPurify from "dompurify";
 import { deletePhoto, editPhoto, getImageBlob } from "../api/photos.js";
@@ -39,7 +39,7 @@ export function usePhotoActions(openPhoto, editDraft) {
                                 await new Promise((resolve) => setTimeout(resolve, 5000));
                         } else {
                                 const filename = extractFilename(photo.image_endpoint);
-                                const response = await deletePhoto(filename);
+                                await deletePhoto(filename);
                         }
                         alert("Delete successful");
                 } catch (error) {
@@ -67,7 +67,8 @@ export function usePhotoActions(openPhoto, editDraft) {
                                         title: sanitizeInput(editDraft.title),
                                         caption: sanitizeInput(editDraft.caption),
                                 };
-                                const response = await editPhoto(filename, data);
+                                await editPhoto(filename, data);
+                                
                         }
                         alert("Edit successful");
                 } catch (error) {
