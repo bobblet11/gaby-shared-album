@@ -18,7 +18,7 @@ app.use("/api/photos/", photoRoutes);
 
 app.use(errorHandler);
 
-const server = app.listen(port, (error) => {
+const server = app.listen(config.api.port, (error) => {
         if (!error) {
                 console.log("Server is Successfully Running, and App is listening on port " + config.api.port);
         } else {

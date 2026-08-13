@@ -1,4 +1,4 @@
-const { AppError, TransactionError } = require("./AppError");
+const { TransactionError } = require("./AppError");
 
 // EXAMPLE USAGE
 // const run = wrapInTransaction(
