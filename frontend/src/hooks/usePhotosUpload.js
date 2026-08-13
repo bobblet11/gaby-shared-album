@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import config from "../configs/config.js";
+import {config} from "../configs/config.js";
 import { uploadPhoto } from "../api/photos.js";
 import DOMPurify from "dompurify";
 

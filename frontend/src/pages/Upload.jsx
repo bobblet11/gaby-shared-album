@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhotoUpload } from "../hooks/usePhotosUpload";
-import config from "../configs/config";
+import { config } from "../configs/config.js";
 
 export default function UploadPage() {
         const navigate = useNavigate();

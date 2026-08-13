@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../configs/config"
+import {config} from "../configs/config.js"
 
 // Create a reusable axios instance
 const client = axios.create({

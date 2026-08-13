@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import PLACEHOLDER_PHOTOS from "../assets/placeholderPhotos";
 import { getAllPhotos } from "../api/photos.js";
-import config from "../configs/config";
+import {config} from "../configs/config.js";
 
 export function usePhotos() {
         const [photos, setPhotos] = useState([]);

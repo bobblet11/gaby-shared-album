@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import config from "../configs/config";
+import {config} from "../configs/config.js";
 import DOMPurify from "dompurify";
 import { deletePhoto, editPhoto, getImageBlob } from "../api/photos.js";
 
