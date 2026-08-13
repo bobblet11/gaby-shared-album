@@ -27,7 +27,7 @@ jobs:
                                   FRONTEND_ENV_PATH="./frontend/.env.production"
                                   echo "Updating frontend .env.production..."
                                   mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
-                                  echo "REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}" >> $FRONTEND_ENV_PATH
+                                  echo "REACT_APP_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}" >> $FRONTEND_ENV_PATH
                                   echo "REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}" >> $FRONTEND_ENV_PATH
                                   echo "REACT_APP_API_PORT=${{  vars.API_PORT  }}" >> $FRONTEND_ENV_PATH
 
