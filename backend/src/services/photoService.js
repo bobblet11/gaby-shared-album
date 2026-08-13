@@ -63,8 +63,8 @@ exports.uploadPhoto = async (title, caption, files) => {
                         await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).toFile(downPath);
 
                         // Insert row — if title/caption are empty, store NULL
-                        const imageSrc = path.join(config.public_api_domain, "media", config.full_scale_folder_name, `${hash}_full${ext}`);
-                        const placeholderSrc = path.join(config.public_api_domain, "media", config.down_scale_folder_name, `${hash}_down${ext}`);
+                        const imageSrc = path.join(config.api.domain, "media", config.full_scale_folder_name, `${hash}_full${ext}`);
+                        const placeholderSrc = path.join(config.api.domain, "media", config.down_scale_folder_name, `${hash}_down${ext}`);
                         const insertedPhoto = await Photo.insertPhoto(db, hash, title, caption, dateTime, imageSrc, placeholderSrc);
                         if (insertedPhoto === null) throw new AppError(`Failed to insert photo`);
                         results.push(insertedPhoto);
