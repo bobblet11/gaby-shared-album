@@ -1,6 +1,11 @@
+const apiDomain = process.env.REACT_APP_API_DOMAIN;
+const apiPort = parseInt(process.env.REACT_APP_API_PORT, 10);
+const domain = apiDomain && apiPort ? `${apiDomain}:${apiPort}` : "public_domain";
+
+
 export const config = {
         api: {
-                domain: `${process.env.REACT_APP_API_DOMAIN}:${parseInt(process.env.REACT_APP_API_PORT, 10)}` || "public_domain",
+                domain: domain,
                 use_api: process.env.REACT_APP_FEATURE_FLAG === "true" || false,
                 max_files_per_upload: parseInt(process.env.process.env.REACT_APP_MAX_FILE_UPLOAD, 10) || 15,
         },
