@@ -23,7 +23,7 @@ export function usePhotos() {
                         setIsFetchingPhotos(false);
                 };
                 loadPhotos();
-        }, [config]);
+        }, []);
 
         const transformedPhotos = useMemo(() => {
                 const count = photos.length;
