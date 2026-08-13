@@ -1,14 +1,27 @@
 import client from "./client";
 
-export const getAllPhotos = () => client.get(`/api/photos/`);
-export const getPhotoById = (id) => client.get(`/api/photos/${id}`);
+export const getAllPhotos = async () => {
+        const res = await client.get(`/api/photos/`);
+        return res.data; // <-- return only the data
+};
 
-// UPLOAD: data = {title, caption, files}
-export const uploadPhoto = (data) => client.post(`/api/photos/`, data);
-export const deletePhoto = (filename) => client.delete(`/api/photos/${filename}`);
+export const getPhotoById = async (id) => {
+        const res = await client.get(`/api/photos/${id}`);
+        return res.data;
+};
 
+// UPLOAD: formData = {title, caption, image}
+export const uploadPhoto = (formData) => client.post(`/api/photos/`, formData);
+
+export const deletePhoto = async (filename) => {
+        const res = await client.delete(`/api/photos/${filename}`);
+        return res.data;
+};
 // EDIT: data = {title, caption}
-export const editPhoto = (filename, data) => client.put(`/api/photos/${filename}`, data);
+export const editPhoto = async (filename, data) => {
+        const res = await client.put(`/api/photos/${filename}`, data);
+        return res.data;
+};
 
 export const getImageBlob = (imageUrl) =>
         client.get(imageUrl, {

@@ -9,7 +9,7 @@ import { usePhotoDetail } from "../hooks/usePhotoDetail";
 export default function PhotoBoard({ photos = [] }) {
         const boardRef = useRef(null);
 
-        const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption } = usePhotoDetail();
+        const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption} = usePhotoDetail();
         const { isUploading, isDeleting, isDownloading, handleDelete, handleEditSubmit, handleDownload } = usePhotoActions(openPhoto, editDraft);
         return (
                 <>

@@ -37,12 +37,11 @@ export function usePhotoActions(openPhoto, editDraft) {
 
                         if (!config.api.use_api || !config.api.domain) {
                                 await new Promise((resolve) => setTimeout(resolve, 5000));
-                                alert("Delete successful");
                         } else {
                                 const filename = extractFilename(photo.image_endpoint);
-                                const result = await deletePhoto(filename);
-                                alert("Delete successful:", JSON.stringify(result));
+                                const response = await deletePhoto(filename);
                         }
+                        alert("Delete successful");
                 } catch (error) {
                         console.error("Error deleting file:", error);
                         alert("Failed to delete");
@@ -68,7 +67,7 @@ export function usePhotoActions(openPhoto, editDraft) {
                                         title: sanitizeInput(editDraft.title),
                                         caption: sanitizeInput(editDraft.caption),
                                 };
-                                const result = await editPhoto(filename, data);
+                                const response = await editPhoto(filename, data);
                         }
                         alert("Edit successful");
                 } catch (error) {
