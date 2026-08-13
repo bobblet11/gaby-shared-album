@@ -10,6 +10,6 @@ export default [
         pluginJs.configs.recommended,
         pluginReact.configs.flat.recommended,
         {
-                ignores: ["libs/**"],
+                ignores: ["src/libs/**"],
         },
 ];

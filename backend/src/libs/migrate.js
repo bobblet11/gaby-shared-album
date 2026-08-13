@@ -10,7 +10,7 @@
  *   node migrate.js create <name>   - Create new migration file
  *
  * Environment variables:
- *   DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+ *   config.db.host, config.db.port, config.db.name, db.config.user, config.db.password
  *   Or use DATABASE_URL connection string
  */
 
@@ -18,23 +18,21 @@ const fs = require("fs");
 const path = require("path");
 const { Client } = require("pg");
 
-const db = require(path.resolve(__dirname, "../db"));
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-
+const db = require(path.resolve(__dirname, "../configs/db"));
+const config = require("./config");
 
 // Configuration
 const config = {
-        host: process.env.DB_HOST || "localhost",
-        port: parseInt(process.env.DB_PORT || "5432"),
-        database: process.env.DB_NAME || "postgres",
-        user: process.env.DB_USER || "postgres",
-        password: process.env.DB_PASSWORD || "",
-        // If DATABASE_URL is provided, it takes precedence
+        host: config.db.host || "localhost",
+        port: parseInt(config.db.port|| "5432"),
+        database: config.db.name || "postgres",
+        user: config.db.user || "postgres",
+        password: config.db.password || "",
         connectionString: db.encodedDatabaseUrl,
 };
 
-const MIGRATIONS_DIR = process.env.MIGRATIONS_DIR || path.join(process.cwd(), "migrations");
-const MIGRATIONS_TABLE = process.env.MIGRATIONS_TABLE || "public.migrations";
+const MIGRATIONS_DIR = path.join(process.cwd(), "migrations");
+const MIGRATIONS_TABLE = "public.migrations";
 const MIGRATIONS_SCHEMA = MIGRATIONS_TABLE.split(".")[0];
 
 // Database helper
@@ -190,11 +188,11 @@ Usage:
   node migrate.js create <name>   - Create new migration file
 
 Environment variables:
-  DB_HOST              - Database host (default: localhost)
-  DB_PORT              - Database port (default: 5432)
-  DB_NAME              - Database name (default: postgres)
-  DB_USER              - Database user (default: postgres)
-  DB_PASSWORD          - Database password
+  config.db.host              - Database host (default: localhost)
+  config.db.port              - Database port (default: 5432)
+  config.db.name              - Database name (default: postgres)
+  db.config.user              - Database user (default: postgres)
+  config.db.password          - Database password
   DATABASE_URL         - Full connection string (overrides individual vars)
   MIGRATIONS_DIR       - Path to migrations directory (default: ./migrations)
   MIGRATIONS_TABLE     - Table name for tracking (default: public.migrations)
