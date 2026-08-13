@@ -6,6 +6,7 @@ export default function UploadPage() {
         const API_URL = process.env.REACT_APP_API_URL;
         const USE_API_URL = process.env.REACT_APP_FEATURE_FLAG === "true";
         const navigate = useNavigate();
+        
         const [title, setTitle] = useState("");
         const [caption, setCaption] = useState("");
         const [file, setFile] = useState(null);

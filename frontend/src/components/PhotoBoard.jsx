@@ -3,190 +3,14 @@ import Photo from "./Photo";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import DOMPurify from "dompurify";
 import PropTypes from "prop-types";
-
-function rand(min, max) {
-        return Math.random() * (max - min) + min;
-}
-
-function samePhoto(a, b) {
-        if (!a || !b) return false;
-        return a.title === b.title && a.caption === b.caption && a.image_endpoint === b.image_endpoint;
-}
+import { usePhotoActions } from "../hooks/usePhotoActions";
+import { usePhotoDetail } from "../hooks/usePhotoDetail";
 
 export default function PhotoBoard({ photos = [] }) {
         const boardRef = useRef(null);
-        const [openPhoto, setOpenPhoto] = useState(null);
-        const [editDraft, setEditDraft] = useState(null);
 
-        const [isEditingPhoto, setIsEditingPhoto] = useState(false);
-        const [isUploading, setIsUploading] = useState(false);
-        const [isDeleting, setIsDeleting] = useState(false);
-        const [isDownloading, setIsDownloading] = useState(false);
-
-        useEffect(() => {
-                if (openPhoto) {
-                        setEditDraft({
-                                title: openPhoto.title ?? "",
-                                caption: openPhoto.caption ?? "",
-                                image_endpoint: openPhoto.image_endpoint ?? "",
-                        });
-                } else {
-                        setEditDraft(null);
-                }
-
-                setIsEditingPhoto(false);
-                setIsUploading(false);
-                setIsDeleting(false);
-                setIsDownloading(false);
-        }, [openPhoto]);
-
-        const isDirty = useMemo(() => {
-                if (!openPhoto || !editDraft) return false;
-
-                return !samePhoto(
-                        {
-                                title: openPhoto.title ?? "",
-                                caption: openPhoto.caption ?? "",
-                                image_endpoint: openPhoto.image_endpoint ?? "",
-                        },
-                        editDraft,
-                );
-        }, [openPhoto, editDraft]);
-
-        const API_URL = process.env.REACT_APP_API_URL;
-        const USE_API_URL = process.env.REACT_APP_FEATURE_FLAG === "true";
-
-        const validateInputs = (title, caption) => {
-                if (title.length > 100) {
-                        alert("Title must be less than 100 characters.");
-                        return false;
-                }
-                if (caption.length > 500) {
-                        alert("Caption must be less than 500 characters.");
-                        return false;
-                }
-                return true;
-        };
-
-        const sanitizeInput = (input) => {
-                return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-        };
-
-        const handleDelete = async (photo) => {
-                try {
-                        const confirmed = window.confirm("Are you sure you want to delete this photo?");
-                        if (!confirmed) return; // stop if user cancels
-                        setIsDeleting(true);
-
-                        if (!USE_API_URL || !API_URL) {
-                                await new Promise((resolve) => setTimeout(resolve, 5000));
-                                alert("Delete successful");
-                        } else {
-                                const body = {
-                                        imageEndpoint: sanitizeInput(photo.image_endpoint),
-                                        placeholderEndpoint: sanitizeInput(photo.placeholder_endpoint),
-                                };
-
-                                const response = await fetch(`${API_URL}/api/photo/delete`, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify(body),
-                                });
-
-                                if (!response.ok) {
-                                        throw new Error(`Delete failed: ${response.statusText}`);
-                                }
-
-                                const result = await response.json();
-                                alert("Delete successful:", result);
-                        }
-                } catch (error) {
-                        console.error("Error deleting file:", error);
-                        alert("Failed to delete");
-                } finally {
-                        setIsDeleting(false);
-                        window.location.reload(false);
-                }
-        };
-
-        const handleEditSubmit = async (e) => {
-                e.preventDefault();
-
-                try {
-                        if (!openPhoto || !editDraft) return;
-                        if (!validateInputs(editDraft.title, editDraft.caption)) return;
-                        setIsUploading(true);
-
-                        if (USE_API_URL && API_URL) {
-                                const body = {
-                                        title: sanitizeInput(editDraft.title),
-                                        caption: sanitizeInput(editDraft.caption),
-                                        imageEndpoint: sanitizeInput(editDraft.image_endpoint),
-                                };
-
-                                const response = await fetch(`${API_URL}/api/photo/edit`, {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify(body),
-                                });
-
-                                if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
-                        } else {
-                                await new Promise((resolve) => setTimeout(resolve, 5000));
-                        }
-
-                        alert("Edit successful");
-                } catch (error) {
-                        console.error("Error editing file:", error);
-                        alert("Failed to edit");
-                } finally {
-                        window.location.reload(false);
-                        setIsUploading(false);
-                        setIsEditingPhoto(false);
-                }
-        };
-
-        const handleDownload = async () => {
-                try {
-                        setIsDownloading(true);
-                        const response = await fetch(openPhoto.checkedImageUrl);
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = openPhoto.title || "photo.jpg";
-                        document.body.appendChild(link);
-                        link.click();
-                        link.remove();
-                        window.URL.revokeObjectURL(url);
-                } catch (error) {
-                        console.error("Error downloading file:", error);
-                        alert("Failed to download");
-                } finally {
-                        setIsDownloading(false);
-                }
-        };
-
-        const onOpenPhoto = (photo) => {
-                if (openPhoto && photo.imageUrl === openPhoto.imageUrl) {
-                        return;
-                }
-                setOpenPhoto(photo);
-        };
-
-        const onClosePhoto = () => {
-                setOpenPhoto(null);
-        };
-
-        const onExitEdit = () => {
-                setEditDraft({
-                        title: openPhoto.title ?? "",
-                        caption: openPhoto.caption ?? "",
-                        image_endpoint: openPhoto.image_endpoint ?? "",
-                });
-                setIsEditingPhoto(false);
-        };
-
+        const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption } = usePhotoDetail();
+        const { isUploading, isDeleting, isDownloading, handleDelete, handleEditSubmit, handleDownload } = usePhotoActions(openPhoto, editDraft);
         return (
                 <>
                         {openPhoto && (
@@ -220,9 +44,9 @@ export default function PhotoBoard({ photos = [] }) {
                                                                 {isUploading && <div className="spinner" style={{ margin: "4rem auto" }}></div>}
                                                                 {!isUploading && (
                                                                         <form className="upload-form" onSubmit={handleEditSubmit}>
-                                                                                <input type="text" placeholder="Title" value={editDraft.title} onChange={(e) => setEditDraft((prev) => ({ ...prev, title: e.target.value }))} disabled={isUploading} />
+                                                                                <input type="text" placeholder="Title" value={editDraft.title} onChange={(e) => updateTitle(e)} disabled={isUploading} />
 
-                                                                                <textarea placeholder="Caption" value={editDraft.caption} onChange={(e) => setEditDraft((prev) => ({ ...prev, caption: e.target.value }))} disabled={isUploading} />
+                                                                                <textarea placeholder="Caption" value={editDraft.caption} onChange={(e) => updateCaption(e)} disabled={isUploading} />
 
                                                                                 <button type="submit" disabled={isUploading || !isDirty}>
                                                                                         Submit edit
@@ -260,7 +84,7 @@ export default function PhotoBoard({ photos = [] }) {
                                                         >
                                                                 <i className="fa fa-trash" aria-hidden="true"></i>
                                                         </button>
-                                                        <button className="photo-modal-edit" onClick={() => setIsEditingPhoto(true)} disabled={isUploading || isDeleting || isDownloading}>
+                                                        <button className="photo-modal-edit" onClick={onEnterEdit} disabled={isUploading || isDeleting || isDownloading}>
                                                                 <i className="fas fa-edit" aria-hidden="true"></i>
                                                         </button>
                                                 </div>

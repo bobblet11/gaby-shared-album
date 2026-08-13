@@ -1,4 +1,4 @@
-import client from "./client"
+import client from "./client";
 
 export const getAllPhotos = () => client.get(`/api/photos/`);
 export const getPhotoById = (id) => client.get(`/api/photos/${id}`);
@@ -9,3 +9,9 @@ export const deletePhoto = (filename) => client.delete(`/api/photos/${filename}`
 
 // EDIT: data = {title, caption}
 export const editPhoto = (filename, data) => client.put(`/api/photos/${filename}`, data);
+
+export const getImageBlob = (imageUrl) =>
+        client.get(imageUrl, {
+                responseType: "blob",
+                baseURL: "",
+        });

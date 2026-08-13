@@ -3,13 +3,14 @@ import PLACEHOLDER_PHOTOS from "../assets/placeholderPhotos";
 import { getAllPhotos } from "../api/photos.js";
 import config from "../configs/config";
 
-function rand(min, max) {
-        return Math.random() * (max - min) + min;
-}
+
 
 export function usePhotos() {
         const [photos, setPhotos] = useState([]);
         const [isFetchingPhotos, setIsFetchingPhotos] = useState(true);
+        const rand = (min, max) => {
+                return Math.random() * (max - min) + min;
+        }
 	
         useEffect(() => {
                 const loadPhotos = async () => {
