@@ -11,7 +11,7 @@ export const getPhotoById = async (id) => {
 };
 
 // UPLOAD: formData = {title, caption, image}
-export const uploadPhoto = (formData) =>
+export const uploadPhoto = async (formData) =>
         client.post(`/api/photos/`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
         });
@@ -26,7 +26,7 @@ export const editPhoto = async (filename, data) => {
         return res.data;
 };
 
-export const getImageBlob = (imageUrl) => {
+export const getImageBlob = async (imageUrl) => {
         const res = client.get(imageUrl, {
                 responseType: "blob",
                 baseURL: "",
