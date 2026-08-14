@@ -19,7 +19,7 @@ const path = require("path");
 const { Client } = require("pg");
 
 const db = require(path.resolve(__dirname, "../configs/db"));
-const config = require("./config");
+const config = require("../configs/config");
 
 // Configuration
 const db_config = {
