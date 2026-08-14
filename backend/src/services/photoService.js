@@ -51,9 +51,9 @@ exports.uploadPhoto = async (title, caption, files) => {
 
                         // File paths
                         const ext = path.extname(file.originalname) || (file.mimetype === "image/png" ? ".png" : ".jpg");
-                        const origPath = path.join(config.base_media_path, config.original_scale_folder_name, `${hash}_orig${ext}`);
-                        const fullPath = path.join(config.base_media_path, config.full_scale_folder_name, `${hash}_full${ext}`);
-                        const downPath = path.join(config.base_media_path, config.down_scale_folder_name, `${hash}_down${ext}`);
+                        const origPath = path.join(config.media.basePath, config.media.originalScaleFolder, `${hash}_orig${ext}`);
+                        const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, `${hash}_full${ext}`);
+                        const downPath = path.join(config.media.basePath, config.media.downScaleFolder, `${hash}_down${ext}`);
 
                         // Write images to disk
                         await fs.rename(tempPath, origPath);
@@ -63,8 +63,8 @@ exports.uploadPhoto = async (title, caption, files) => {
                         await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).toFile(downPath);
 
                         // Insert row — if title/caption are empty, store NULL
-                        const imageSrc = path.join(config.api.domain, "media", config.full_scale_folder_name, `${hash}_full${ext}`);
-                        const placeholderSrc = path.join(config.api.domain, "media", config.down_scale_folder_name, `${hash}_down${ext}`);
+                        const imageSrc = path.join(config.api.domain, "media", config.media.fullPath, `${hash}_full${ext}`);
+                        const placeholderSrc = path.join(config.api.domain, "media", config.media.downScaleFolder, `${hash}_down${ext}`);
                         const insertedPhoto = await Photo.insertPhoto(db, hash, title, caption, dateTime, imageSrc, placeholderSrc);
                         if (insertedPhoto === null) throw new AppError(`Failed to insert photo`);
                         results.push(insertedPhoto);
@@ -80,8 +80,8 @@ exports.deletePhoto = async (filename) => {
         const _ = async (filename) => {
                 const id = path.basename(filename).split("_")[0];
 
-                const fullPath = path.join(config.base_media_path, config.full_scale_folder_name, filename);
-                const downPath = path.join(config.base_media_path, config.down_scale_folder_name, filename);
+                const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, filename);
+                const downPath = path.join(config.media.basePath, config.media.downScaleFolder, filename);
 
                 await fs.unlink(fullPath);
                 await fs.unlink(downPath);
@@ -107,10 +107,10 @@ exports.editPhoto = async (filename, title, caption) => {
 };
 
 exports.statusCheck = async () => {
-        const tmpPath = path.join(config.base_media_path, config.temp_scale_folder_name);
-        const origPath = path.join(config.base_media_path, config.original_scale_folder_name);
-        const fullPath = path.join(config.base_media_path, config.full_scale_folder_name);
-        const downPath = path.join(config.base_media_path, config.down_scale_folder_name);
+        const tmpPath = path.join(config.media.basePath, config.media.tempScaleFolder);
+        const origPath = path.join(config.media.basePath, config.media.originalScaleFolder);
+        const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder);
+        const downPath = path.join(config.media.basePath, config.media.downScaleFolder);
 
         for (const dir of [tmpPath, origPath, fullPath, downPath]) {
                 if (!fssync.existsSync(dir)) throw new Error("Server cannot start. Media folders do not exist!");
