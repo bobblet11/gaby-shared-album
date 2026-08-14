@@ -85,8 +85,11 @@ exports.uploadPhoto = async (title, caption, files) => {
 };
 
 exports.deletePhoto = async (filename) => {
+        //NOT ACTUALLY A TRANSACTION. FILE OPERATIONS ARE NOT TRANSCATIONAL! ONLY POSTGRES OPERATIONS WILL BE ROLLBACKED
+        // todo: implement file transaction system
         const _ = async (filename) => {
                 const id = path.basename(filename).split("_")[0];
+                const ext = path.extname(filename);
 
                 const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, `${id}_full${ext}`);
                 const downPath = path.join(config.media.basePath, config.media.downScaleFolder, `${id}_down${ext}`);
