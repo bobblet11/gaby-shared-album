@@ -66,7 +66,7 @@ exports.uploadPhoto = async (title, caption, files) => {
                         const imageSrc = `${config.api.domain}/media/${config.media.fullScaleFolder}/${hash}_full${ext}`;
                         const placeholderSrc = `${config.api.domain}/media/${config.media.downScaleFolder}/${hash}_down${ext}`;
 
-                        const insertedPhoto = await Photo.insertPhoto(db, hash, title, caption, dateTime, imageSrc, placeholderSrc);
+                        const insertedPhoto = await Photo.insertPhoto(db, hash, title, caption, imageSrc, placeholderSrc);
                         if (insertedPhoto === null) throw new AppError(`Failed to insert photo`);
                         results.push(insertedPhoto);
                 }
