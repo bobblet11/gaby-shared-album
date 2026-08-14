@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-export default function Photo({ id, title, caption, upload_date, image_src, placeholder_src, account_id, rotation = 0, size = 1, zIndex=1000, offsetX = 0, offsetY = 0, onOpenPhoto }) {
+export default function Photo({ id, title, caption, upload_date, image_src, placeholder_src, account_id, rotation = 0, size = 1, zIndex = 1000, offsetX = 0, offsetY = 0, onOpenPhoto }) {
         const [isLoaded, setIsLoaded] = useState(false);
         return (
                 <div
@@ -24,6 +24,7 @@ export default function Photo({ id, title, caption, upload_date, image_src, plac
                                         caption,
                                         image_src,
                                         placeholder_src,
+                                        account_id,
                                 };
 
                                 onOpenPhoto(photo);
@@ -48,17 +49,17 @@ export default function Photo({ id, title, caption, upload_date, image_src, plac
         );
 }
 
-
-
 Photo.propTypes = {
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         title: PropTypes.string.isRequired,
-        date: PropTypes.string, // or PropTypes.instanceOf(Date) if you pass Date objects
-        caption: PropTypes.string,
-        image_endpoint: PropTypes.string.isRequired,
-        placeholder_endpoint: PropTypes.string,
+        caption: PropTypes.string.isRequired,
+        upload_date: PropTypes.string.isRequired, // or PropTypes.instanceOf(Date) if you pass Date objects
+        image_src: PropTypes.string.isRequired,
+        placeholder_src: PropTypes.string.isRequired,
+        account_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         rotation: PropTypes.number,
         size: PropTypes.number,
+        zIndex: PropTypes.number,
         offsetX: PropTypes.number,
         offsetY: PropTypes.number,
         onOpenPhoto: PropTypes.func.isRequired,
