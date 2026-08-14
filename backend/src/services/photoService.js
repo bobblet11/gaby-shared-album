@@ -88,8 +88,8 @@ exports.deletePhoto = async (filename) => {
         const _ = async (filename) => {
                 const id = path.basename(filename).split("_")[0];
 
-                const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, filename);
-                const downPath = path.join(config.media.basePath, config.media.downScaleFolder, filename);
+                const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, `${id}_full${ext}`);
+                const downPath = path.join(config.media.basePath, config.media.downScaleFolder, `${id}_down${ext}`);
 
                 await fs.unlink(fullPath);
                 await fs.unlink(downPath);
