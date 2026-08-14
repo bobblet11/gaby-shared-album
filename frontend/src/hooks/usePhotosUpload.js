@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
-import {config} from "../configs/config.js";
+import { config } from "../configs/config.js";
 import { uploadPhoto } from "../api/photos.js";
 import DOMPurify from "dompurify";
 
 export function usePhotoUpload() {
         const [title, setTitle] = useState("");
         const [caption, setCaption] = useState("");
-        const [file, setFile] = useState(null);
+        const [file, setFile] = useState([]);
 
         const [dragOver, setDragOver] = useState(false);
         const [isMultipleFilesSelected, setIsMultipleFilesSelected] = useState(false);
@@ -69,13 +69,12 @@ export function usePhotoUpload() {
                                 }
 
                                 await uploadPhoto(formData);
-                                
                         }
                         alert("Successfully uploaded photo");
                 } finally {
                         setTitle("");
                         setCaption("");
-                        setFile(null);
+                        setFile([]);
                         setIsUploading(false);
                 }
         };
@@ -83,8 +82,11 @@ export function usePhotoUpload() {
         const onFileDrop = (e) => {
                 e.preventDefault();
                 setDragOver(false);
-                const dropped = e.dataTransfer.files?.[0];
-                if (dropped) setFile(dropped);
+                const droppedFiles = Array.from(e.dataTransfer.files || []);
+                if (droppedFiles.length > 0) {
+                        setFile(droppedFiles);
+                        setIsMultipleFilesSelected(droppedFiles.length > 1);
+                }
         };
 
         const onFileDragOver = (e) => {
@@ -98,20 +100,15 @@ export function usePhotoUpload() {
         };
 
         const onSelectedFilesChange = (e) => {
-                const files = Array.from(e.target.files);
+                const files = Array.from(e.target.files || []);
 
                 if (files.length > config.api.max_files_per_upload) {
                         alert(`Please select fewer than ${config.api.max_files_per_upload} images.`);
                         return;
                 }
 
-                if (files.length > 1) {
-                        setIsMultipleFilesSelected(false);
-                } else {
-                        setIsMultipleFilesSelected(true);
-                }
-
-                setFile(Array.from(e.target.files));
+                setFile(files);
+                setIsMultipleFilesSelected(files.length > 1);
         };
 
         const updateTitle = (newTitle) => {

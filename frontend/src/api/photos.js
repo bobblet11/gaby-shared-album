@@ -11,7 +11,10 @@ export const getPhotoById = async (id) => {
 };
 
 // UPLOAD: formData = {title, caption, image}
-export const uploadPhoto = (formData) => client.post(`/api/photos/`, formData);
+export const uploadPhoto = (formData) =>
+        client.post(`/api/photos/`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+        });
 
 export const deletePhoto = async (filename) => {
         const res = await client.delete(`/api/photos/${filename}`);
