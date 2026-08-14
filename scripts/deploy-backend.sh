@@ -37,7 +37,7 @@ BACKEND_APP_NAME="${REPO_NAME}.backend"
 if pm2 describe "${BACKEND_APP_NAME}" >/dev/null; then
   pm2 restart "${BACKEND_APP_NAME}" --update-env
 else
-  pm2 start ./backend/app.js --name "${BACKEND_APP_NAME}"
+  pm2 start ./backend/src/app.js --name "${BACKEND_APP_NAME}"
 fi
 
 
