@@ -22,7 +22,7 @@ const db = require(path.resolve(__dirname, "../configs/db"));
 const config = require("./config");
 
 // Configuration
-const config = {
+const db_config = {
         host: config.db.host || "localhost",
         port: parseInt(config.db.port|| "5432"),
         database: config.db.name || "postgres",
@@ -42,7 +42,7 @@ class MigrationRunner {
         }
 
         async connect() {
-                this.client = new Client(config);
+                this.client = new Client(db_config);
                 await this.client.connect();
         }
 
