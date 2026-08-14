@@ -4,10 +4,13 @@ const { getAllPhotos, getPhotoById, uploadPhoto, deletePhoto, editPhoto } = requ
 
 const router = express.Router();
 
+
 router.get("/", getAllPhotos);
 router.get("/:id", getPhotoById);
 router.post("/", upload.array("image"), uploadPhoto);
 router.delete("/:filename", deletePhoto);
 router.put("/:filename", editPhoto)
+
+console.log("photoRoutes loaded");
 
 module.exports = router;
