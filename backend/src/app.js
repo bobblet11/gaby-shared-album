@@ -15,7 +15,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 console.log("Mounting /test");
-app.get("/test", (req, res) => res.send("OK"));
+app.get("/api/test", (req, res) => res.send("OK"));
 
 console.log("Mounting /api/photos");
 app.use("/api/photos", photoRoutes);
