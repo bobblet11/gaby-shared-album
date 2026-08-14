@@ -59,7 +59,7 @@ export default function PhotoBoard({ photos = [] }) {
                                         <div className="photo-modal-image-container" onClick={(e) => e.stopPropagation()}>
                                                 <TransformWrapper disabled={isUploading || isDeleting || isDownloading || isEditingPhoto} initialScale={1} minScale={1} maxScale={5} centerOnInit wheel={{ step: 0.001 }} pinch={{ step: 1 }}>
                                                         <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%" }}>
-                                                                <img className="photo-modal-image" src={openPhoto.checkedImageUrl} alt={openPhoto.title} />
+                                                                <img className="photo-modal-image" src={openPhoto.image_src} alt={openPhoto.title} />
                                                         </TransformComponent>
                                                 </TransformWrapper>
 
