@@ -2,7 +2,7 @@ import client from "./client";
 
 export const getAllPhotos = async () => {
         const res = await client.get(`/api/photos/`);
-        return res.data; // <-- return only the data
+        return res.data;
 };
 
 export const getPhotoById = async (id) => {

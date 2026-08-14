@@ -10,7 +10,7 @@ export function usePhotoDetail() {
                         setEditDraft({
                                 title: openPhoto.title ?? "",
                                 caption: openPhoto.caption ?? "",
-                                image_endpoint: openPhoto.image_endpoint ?? "",
+                                image_src: openPhoto.image_src ?? ""
                         });
                 } else {
                         setEditDraft(null);
@@ -19,7 +19,7 @@ export function usePhotoDetail() {
 
         const samePhoto = (a, b) => {
                 if (!a || !b) return false;
-                return a.title === b.title && a.caption === b.caption && a.image_endpoint === b.image_endpoint;
+                return a.title === b.title && a.caption === b.caption && a.image_src === b.image_src;
         };
 
         const isDirty = useMemo(() => {
@@ -29,7 +29,7 @@ export function usePhotoDetail() {
                         {
                                 title: openPhoto.title ?? "",
                                 caption: openPhoto.caption ?? "",
-                                image_endpoint: openPhoto.image_endpoint ?? "",
+                                image_src: openPhoto.image_src ?? "",
                         },
                         editDraft,
                 );
@@ -44,7 +44,7 @@ export function usePhotoDetail() {
         };
 
         const onOpenPhoto = (photo) => {
-                if (openPhoto && photo.imageUrl === openPhoto.imageUrl) {
+                if (openPhoto && photo.image_src === openPhoto.image_src) {
                         return;
                 }
                 setOpenPhoto(photo);
@@ -62,7 +62,7 @@ export function usePhotoDetail() {
                 setEditDraft({
                         title: openPhoto.title ?? "",
                         caption: openPhoto.caption ?? "",
-                        image_endpoint: openPhoto.image_endpoint ?? "",
+                        image_src: openPhoto.image_src ?? "",
                 });
                 setIsEditingPhoto(false);
         };

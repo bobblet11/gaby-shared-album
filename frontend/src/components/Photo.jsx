@@ -1,28 +1,13 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-export default function Photo({ id, title, date, caption, image_endpoint, placeholder_endpoint, rotation = 0, size = 1, offsetX = 0, offsetY = 0, onOpenPhoto }) {
+export default function Photo({ id, title, caption, upload_date, image_src, placeholder_src, account_id, rotation = 0, size = 1, zIndex=1000, offsetX = 0, offsetY = 0, onOpenPhoto }) {
         const [isLoaded, setIsLoaded] = useState(false);
-
-        const API_URL = process.env.REACT_APP_API_URL;
-
-        function resolvePhotoUrl(value) {
-                // If it starts with http:// or https://, treat as full URL
-                if (/^https?:\/\//i.test(value)) {
-                        return value;
-                }
-                // Otherwise, assume it's an endpoint and prepend API_URL
-                return `${API_URL}/media/${value}`;
-        }
-
-        const checkedImageUrl = resolvePhotoUrl(image_endpoint);
-        const checkedPlaceholderUrl = resolvePhotoUrl(placeholder_endpoint);
-
         return (
                 <div
                         className="photo-card"
                         style={{
-                                zIndex: 1,
+                                zIndex: `${zIndex}`,
                                 cursor: "pointer",
                                 userSelect: "none",
                                 transform: `translate(${offsetX}px, ${offsetY}px) rotate(${rotation}deg) scale(${size})`,
@@ -37,10 +22,10 @@ export default function Photo({ id, title, date, caption, image_endpoint, placeh
                                         id,
                                         title,
                                         caption,
-                                        checkedImageUrl,
-                                        image_endpoint,
-                                        placeholder_endpoint,
+                                        image_src,
+                                        placeholder_src,
                                 };
+
                                 onOpenPhoto(photo);
                         }}
                         role="button"
@@ -48,14 +33,14 @@ export default function Photo({ id, title, date, caption, image_endpoint, placeh
                 >
                         <div className="photo-inner">
                                 <div className="photo-image-wrap">
-                                        {checkedPlaceholderUrl && !isLoaded && <img className="photo-image photo-placeholder" src={checkedPlaceholderUrl} alt={title} />}
-                                        <img className="photo-image" src={checkedImageUrl} alt={title} loading="lazy" onLoad={() => setIsLoaded(true)} />
+                                        {placeholder_src && !isLoaded && <img className="photo-image photo-placeholder" src={placeholder_src} alt={title} />}
+                                        <img className="photo-image" src={image_src} alt={title} loading="lazy" onLoad={() => setIsLoaded(true)} />
                                         <div className="photo-filter" />
                                 </div>
 
                                 <div className="photo-caption">
                                         <div className="photo-title">{title}</div>
-                                        <div className="photo-date">{date}</div>
+                                        <div className="photo-date">{upload_date}</div>
                                         <div className="photo-text">{caption}</div>
                                 </div>
                         </div>
