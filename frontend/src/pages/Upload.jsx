@@ -53,8 +53,8 @@ export default function UploadPage() {
                                                                 </label>
                                                         </div>
 
-                                                        {isMultipleFilesSelected ? <input type="text" placeholder="Title" value={title} onChange={(e) => updateTitle(e.target.value)} disabled={isUploading} /> : <></>}
-                                                        {isMultipleFilesSelected ? <textarea placeholder="Caption" value={caption} onChange={(e) => updateCaption(e.target.value)} disabled={isUploading} /> : <></>}
+                                                        {!isMultipleFilesSelected ? <input type="text" placeholder="Title" value={title} onChange={(e) => updateTitle(e.target.value)} disabled={isUploading} /> : <></>}
+                                                        {!isMultipleFilesSelected ? <textarea placeholder="Caption" value={caption} onChange={(e) => updateCaption(e.target.value)} disabled={isUploading} /> : <></>}
 
                                                         <button type="submit" disabled={isUploading}>
                                                                 Upload
