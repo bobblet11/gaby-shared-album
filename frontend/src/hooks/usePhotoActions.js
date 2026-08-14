@@ -38,7 +38,7 @@ export function usePhotoActions(openPhoto, editDraft) {
                         if (!config.api.use_api || !config.api.domain) {
                                 await new Promise((resolve) => setTimeout(resolve, 5000));
                         } else {
-                                const filename = extractFilename(photo.image_endpoint);
+                                const filename = extractFilename(photo.image_src);
                                 await deletePhoto(filename);
                         }
                         alert("Delete successful");
@@ -62,7 +62,7 @@ export function usePhotoActions(openPhoto, editDraft) {
                         if (!config.api.use_api || !config.api.domain) {
                                 await new Promise((resolve) => setTimeout(resolve, 5000));
                         } else {
-                                const filename = extractFilename(openPhoto.image_endpoint);
+                                const filename = extractFilename(openPhoto.image_src);
                                 const data = {
                                         title: sanitizeInput(editDraft.title),
                                         caption: sanitizeInput(editDraft.caption),
@@ -87,7 +87,7 @@ export function usePhotoActions(openPhoto, editDraft) {
                         if (!config.api.use_api || !config.api.domain) {
                                 await new Promise((resolve) => setTimeout(resolve, 5000));
                         } else {
-                                const imageUrl = openPhoto.checkedImageUrl;
+                                const imageUrl = openPhoto.image_src;
                                 const blob = await getImageBlob(imageUrl);
 
                                 const url = window.URL.createObjectURL(blob);

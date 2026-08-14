@@ -107,8 +107,8 @@ PhotoBoard.propTypes = {
                         title: PropTypes.string.isRequired,
                         date: PropTypes.string, // or PropTypes.instanceOf(Date) if you pass Date objects
                         caption: PropTypes.string,
-                        image_endpoint: PropTypes.string.isRequired,
-                        placeholder_endpoint: PropTypes.string,
+                        image_src: PropTypes.string.isRequired,
+                        placeholder_src: PropTypes.string,
                         rotation: PropTypes.number.isRequired,
                         size: PropTypes.number.isRequired,
                         zIndex: PropTypes.number.isRequired,
