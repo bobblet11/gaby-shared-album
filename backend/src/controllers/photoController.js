@@ -1,20 +1,20 @@
 const path = require("path");
 const photoService = require("../services/photoService");
 const { BadRequestError, ValidationError } = require("../utils/AppError");
-
-exports.getAllPhotos = async (req, res) => {
+const asyncHandler = require("../utils/asyncHandler");
+exports.getAllPhotos = asyncHandler(async (req, res) => {
         const photos = await photoService.getAllPhotos();
         res.json(photos);
-};
+});
 
-exports.getPhotoById = async (req, res) => {
+exports.getPhotoById = asyncHandler(async (req, res) => {
         const id = req.params.id;
         if (!id) throw new BadRequestError();
         const photo = await photoService.getPhotoById(id);
         res.json(photo);
-};
+});
 
-exports.uploadPhoto = async (req, res) => {
+exports.uploadPhoto = asyncHandler(async (req, res) => {
         const files = req.files;
         const { title, caption } = req.body;
 
@@ -24,9 +24,9 @@ exports.uploadPhoto = async (req, res) => {
 
         const photo = await photoService.uploadPhoto(title, caption, files);
         res.json(photo);
-};
+});
 
-exports.deletePhoto = async (req, res) => {
+exports.deletePhoto = asyncHandler(async (req, res) => {
         const filename = req.params.filename;
         if (!filename) throw new BadRequestError("No filename attached to request params");
 
@@ -35,9 +35,9 @@ exports.deletePhoto = async (req, res) => {
 
         const photo = await photoService.deletePhoto(filename);
         res.json(photo);
-};
+});
 
-exports.editPhoto = async (req, res) => {
+exports.editPhoto = asyncHandler(async (req, res) => {
         const filename = req.params.filename;
         if (!filename) throw new BadRequestError("No filename attached to request path");
 
@@ -50,4 +50,4 @@ exports.editPhoto = async (req, res) => {
 
         const photo = await photoService.editPhoto(filename, title, caption);
         res.json(photo);
-};
+});

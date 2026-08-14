@@ -11,5 +11,9 @@ export default [
         pluginReact.configs.flat.recommended,
         {
                 ignores: ["src/libs/**"],
+                rules: {
+                        // ✅ Ignore unused "next" in Express handlers
+                        "no-unused-vars": ["error", { argsIgnorePattern: "^next$" }],
+                },
         },
 ];

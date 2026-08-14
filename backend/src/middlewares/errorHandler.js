@@ -1,6 +1,6 @@
 const { TransactionError } = require("../utils/AppError");
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, req, res, next) => {
         console.error("=== ERROR HANDLER CAUGHT ===");
         let appError = err;
         let transactionError = null;
