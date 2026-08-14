@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 export default function Photo({ id, title, caption, upload_date, image_src, placeholder_src, account_id, rotation = 0, size = 1, zIndex = 1000, offsetX = 0, offsetY = 0, onOpenPhoto }) {
         const [isLoaded, setIsLoaded] = useState(false);
+        const datePartOnly = upload_date.split("T")[0];
         return (
                 <div
                         className="photo-card"
@@ -41,7 +42,7 @@ export default function Photo({ id, title, caption, upload_date, image_src, plac
 
                                 <div className="photo-caption">
                                         <div className="photo-title">{title}</div>
-                                        <div className="photo-date">{upload_date}</div>
+                                        <div className="photo-date">{datePartOnly}</div>
                                         <div className="photo-text">{caption}</div>
                                 </div>
                         </div>
