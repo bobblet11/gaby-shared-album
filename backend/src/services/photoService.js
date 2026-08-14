@@ -50,17 +50,24 @@ exports.uploadPhoto = async (title, caption, files) => {
                         }
 
                         // File paths
-                        const ext = path.extname(file.originalname) || (file.mimetype === "image/png" ? ".png" : ".jpg");
+                        let ext = path.extname(file.originalname).toLowerCase();
+                        if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
+                                ext = ".jpg";
+                        }
                         const origPath = path.join(config.media.basePath, config.media.originalScaleFolder, `${hash}_orig${ext}`);
                         const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, `${hash}_full${ext}`);
                         const downPath = path.join(config.media.basePath, config.media.downScaleFolder, `${hash}_down${ext}`);
 
                         // Write images to disk
                         await fs.rename(tempPath, origPath);
-                        // Full scale
-                        await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).jpeg({ quality: 80 }).toFile(fullPath);
-                        // Downscale placeholder
-                        await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).toFile(downPath);
+
+                        if (ext === ".png") {
+                                await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).png().toFile(fullPath);
+                                await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).png().toFile(downPath);
+                        } else {
+                                await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).jpeg({ quality: 80 }).toFile(fullPath);
+                                await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).jpeg({ quality: 80 }).toFile(downPath);
+                        }
 
                         // Insert row — if title/caption are empty, store NULL
                         const imageSrc = `${config.api.domain}/media/${config.media.fullScaleFolder}/${hash}_full${ext}`;
