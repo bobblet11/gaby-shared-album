@@ -157,18 +157,17 @@ jobs:
                                           sudo mkdir -p "${PROJECT_PATH}"
                                           sudo chown $USER:$USER "$PROJECT_PATH"
 
+                                          export BRANCH="${{ github.ref_name }}"
 
                                           if [ ! -d "${PROJECT_PATH}/.git" ]; then
                                             echo "Cloning repo..."
-                                            git clone "https://${GITHUB_ACTOR}:${ACCOUNT_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
+                                            git clone --branch "$BRANCH" "https://${GITHUB_ACTOR}:${ACCOUNT_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
                                           else
                                             echo "Updating repo..."
                                             cd "$PROJECT_PATH"
-                                            git fetch origin main
-                                            git reset --hard origin/main
+                                            git fetch origin "$BRANCH"
+                                            git reset --hard "origin/$BRANCH"
                                           fi
-
-
 
                                           echo "----------------------------------------------"
                                           echo "Staging system..."
