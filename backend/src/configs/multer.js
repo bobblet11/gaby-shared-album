@@ -4,7 +4,7 @@ const config = require("./config");
 
 const storage = multer.diskStorage({
         destination: (req, file, cb) => {
-                cb(null, path.join(config.media.base_media_path, config.media.temp_scale_folder_name));
+                cb(null, path.join(config.media.basePath, config.media.tempScaleFolder));
         },
         filename: (req, file, cb) => {
                 cb(null, Date.now() + "-" + file.originalname);
