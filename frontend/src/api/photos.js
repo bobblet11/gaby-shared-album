@@ -27,7 +27,7 @@ export const editPhoto = async (filename, data) => {
 };
 
 export const getImageBlob = async (imageUrl) => {
-        const res = client.get(imageUrl, {
+        const res = await client.get(imageUrl, {
                 responseType: "blob",
                 baseURL: "",
         });
