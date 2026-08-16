@@ -161,7 +161,7 @@ describe("photoService", () => {
                 mockClient = {
                         query: async (sql) => {
                                 // Simulate normal rollback success
-                                if (sql === "ROLLBACK") throw Error("Failed to Rollback!");
+                                if (sql === "ROLLBACK") throw new Error("Failed to Rollback!");
                         },
 
                         // Simulate end of transaction
