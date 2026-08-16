@@ -152,7 +152,7 @@ class FsOperation {
 
                 switch (this.op) {
                         case "sharp":
-                                await this.prepareSharp(absTempOutput);
+                                // await this.prepareSharp(absTempOutput);
                                 break;
                         case "unlink":
                         case "rename":
@@ -164,37 +164,6 @@ class FsOperation {
                 }
                 this.prepared = true;
                 console.log(`[FsOperation] Prepared op=${this.op} temp=${this.absTempOutput}`);
-        }
-
-        async prepareSharp(outputPath) {
-                const args = this.args;
-                const pipeline = await sharp(args.inputPath);
-
-                if (args.rotate !== undefined) {
-                        await pipeline.rotate(args.rotate === true ? undefined : args.rotate);
-                }
-
-                if (args.withMetadata === true) {
-                        await pipeline.withMetadata();
-                }
-
-                if (args.resize !== undefined) {
-                        await pipeline.resize(args.resize);
-                }
-
-                if (args.blur !== undefined) {
-                        await pipeline.blur(args.blur);
-                }
-
-                if (args.format === "jpeg") {
-                        await pipeline.jpeg({
-                                quality: args.quality,
-                        });
-                } else {
-                        await pipeline.png();
-                }
-
-                return await pipeline.toFile(outputPath);
         }
 
         async execute() {
@@ -209,6 +178,7 @@ class FsOperation {
 
                 switch (this.op) {
                         case "sharp":
+                                await this.executeSharp(this.absTempOutput);
                                 await fs.copyFile(this.absTempOutput, this.args.outputPath);
                                 break;
 
@@ -228,6 +198,37 @@ class FsOperation {
                 console.log(`[FsOperation] Executed op=${this.op} output=${this.args.outputPath}`);
         }
 
+        async executeSharp(outputPath) {
+                const args = this.args;
+                const pipeline = sharp(args.inputPath);
+
+                if (args.rotate !== undefined) {
+                        pipeline.rotate(args.rotate === true ? undefined : args.rotate);
+                }
+
+                if (args.withMetadata === true) {
+                        pipeline.withMetadata();
+                }
+
+                if (args.resize !== undefined) {
+                        pipeline.resize(args.resize);
+                }
+
+                if (args.blur !== undefined) {
+                        pipeline.blur(args.blur);
+                }
+
+                if (args.format === "jpeg") {
+                        pipeline.jpeg({
+                                quality: args.quality,
+                        });
+                } else {
+                        pipeline.png();
+                }
+
+                return await pipeline.toFile(outputPath);
+        }
+
         async rollback() {
                 console.log(`[FsOperation] Rolling back op=${this.op}`);
                 if (!this.absTempOutput) {
@@ -242,6 +243,7 @@ class FsOperation {
                 if (this.prepared && !this.committed) {
                         switch (this.op) {
                                 case "sharp":
+                                        break;
                                 case "unlink":
                                 case "rename":
                                         await fs.rm(this.absTempOutput, {
@@ -405,7 +407,6 @@ class FsTransactionClient {
                                 this.status = "failed_rollback";
                                 console.error(`[FsTransactionClient] ROLLBACK failed:`, error);
                                 throw new Error(`Failed to commit: ${error}`);
-                                
                         } finally {
                                 if (this.operationDirectory) {
                                         await fs.rm(this.operationDirectory, { recursive: true, force: true });
