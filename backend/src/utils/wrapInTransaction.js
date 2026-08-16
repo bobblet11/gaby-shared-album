@@ -18,7 +18,7 @@ const wrapInTransaction = (db, func, args = []) => {
                         transactionClient = await db.connect();
                         await transactionClient.query("BEGIN");
 
-                        const result = await func(...args, wrapInTransaction);
+                        const result = await func(...args, transactionClient);
 
                         await transactionClient.query("COMMIT");
                         return result;
