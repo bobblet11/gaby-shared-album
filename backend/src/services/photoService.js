@@ -1,7 +1,6 @@
 const fs = require("fs").promises;
 const fssync = require("fs");
 const path = require("path");
-const sharp = require("sharp");
 const crypto = require("crypto");
 
 const Photo = require("../models/Photo");
