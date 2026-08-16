@@ -405,8 +405,9 @@ class FsTransactionClient {
                                 console.log(`[FsTransactionClient] ROLLBACK complete`);
                         } catch (error) {
                                 this.status = "failed_rollback";
-                                throw new Error(`Failed to commit: ${error}`);
                                 console.error(`[FsTransactionClient] ROLLBACK failed:`, error);
+                                throw new Error(`Failed to commit: ${error}`);
+                                
                         } finally {
                                 if (this.operationDirectory) {
                                         await fs.rm(this.operationDirectory, { recursive: true, force: true });
