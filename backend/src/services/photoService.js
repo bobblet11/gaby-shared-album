@@ -63,13 +63,13 @@ exports.uploadPhoto = async (title, caption, files) => {
                         // await fs.rename(tempPath, origPath);
 
                         if (ext === ".png") {
-                                await fsClient.query("sharp", { inputPath: tempPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "png" });
-                                await fsClient.query("sharp", { inputPath: tempPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "png" });
+                                await fsClient.query("sharp", { inputPath: origPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "png" });
+                                await fsClient.query("sharp", { inputPath: origPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "png" });
                                 // await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).png().toFile(fullPath);
                                 // await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).png().toFile(downPath);
                         } else {
-                                await fsClient.query("sharp", { inputPath: tempPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "jpeg", quality: 80 });
-                                await fsClient.query("sharp", { inputPath: tempPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "jpeg", quality: 80 });
+                                await fsClient.query("sharp", { inputPath: origPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "jpeg", quality: 80 });
+                                await fsClient.query("sharp", { inputPath: origPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "jpeg", quality: 80 });
                                 // await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).jpeg({ quality: 80 }).toFile(fullPath);
                                 // await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).jpeg({ quality: 80 }).toFile(downPath);
                         }
