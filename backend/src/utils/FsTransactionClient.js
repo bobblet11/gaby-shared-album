@@ -392,13 +392,11 @@ class FsTransactionClient {
                                 while (this.committedOperations.length > 0) {
                                         lastOperation = this.committedOperations.pop();
                                         await lastOperation.rollback();
-                                        this.stagedOperations.push(lastOperation);
                                 }
 
                                 while (this.preparedOperations.length > 0) {
                                         lastOperation = this.preparedOperations.pop();
                                         await lastOperation.rollback();
-                                        this.stagedOperations.push(lastOperation);
                                 }
 
                                 this.status = "rolled_back";
