@@ -9,6 +9,7 @@ const wrapInFsAndDbTransaction = require("../utils/wrapInFsAndDbTransaction");
 const getCurrentISODatetime = require("../utils/getCurrentISODatetime");
 const { NotFoundError, AppError } = require("../utils/AppError");
 const config = require("../configs/config");
+const { FsOperation } = require("../utils/FsTransactionClient");
 
 exports.getAllPhotos = async () => {
         return await Photo.getAllRows(db, true);
@@ -24,9 +25,6 @@ exports.uploadPhoto = async (title, caption, files) => {
         const _ = async (title, caption, files, fsClient, dbClient) => {
                 const dateTime = getCurrentISODatetime({ hasDate: true, hasTime: true });
                 const results = [];
-
-                console.log(title, caption, files);
-
                 for (const file of files) {
                         const tempPath = file.path;
                         const fileBuffer = await fs.readFile(tempPath);
@@ -43,7 +41,8 @@ exports.uploadPhoto = async (title, caption, files) => {
                         // Check duplicates
                         const duplicate = await Photo.findById(dbClient, hash);
                         if (duplicate) {
-                                await fsClient.query("unlink", { inputPath: tempPath });
+                                const deleteTempFile = new FsOperation("unlink", { inputPath: tempPath });
+                                await fsClient.query("QUEUE", deleteTempFile);
                                 // await fs.unlink(tempPath);
                                 results.push(duplicate);
                                 continue;
@@ -59,17 +58,23 @@ exports.uploadPhoto = async (title, caption, files) => {
                         const downPath = path.join(config.media.basePath, config.media.downScaleFolder, `${hash}_down${ext}`);
 
                         // Write images to disk
-                        await fsClient.query("rename", { inputPath: tempPath, outputPath: origPath });
+                        const renameFromTmpToOrig = new FsOperation("rename", { inputPath: tempPath, outputPath: origPath });
+                        await fsClient.query("QUEUE", renameFromTmpToOrig);
+
                         // await fs.rename(tempPath, origPath);
 
                         if (ext === ".png") {
-                                await fsClient.query("sharp", { inputPath: origPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "png" });
-                                await fsClient.query("sharp", { inputPath: origPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "png" });
+                                const generateFullsizePng = new FsOperation("sharp", { inputPath: origPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "png" });
+                                const generateDownsizePng = new FsOperation("sharp", { inputPath: origPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "png" });
+                                await fsClient.query("QUEUE", generateFullsizePng);
+                                await fsClient.query("QUEUE", generateDownsizePng);
                                 // await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).png().toFile(fullPath);
                                 // await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).png().toFile(downPath);
                         } else {
-                                await fsClient.query("sharp", { inputPath: origPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "jpeg", quality: 80 });
-                                await fsClient.query("sharp", { inputPath: origPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "jpeg", quality: 80 });
+                                const generateFullsizeJpeg = new FsOperation("sharp", { inputPath: origPath, outputPath: fullPath, rotate: true, withMetadata: true, resize: { width: 1200 }, format: "jpeg", quality: 80 });
+                                const generateDownSizeJpeg = new FsOperation("sharp", { inputPath: origPath, outputPath: downPath, rotate: true, withMetadata: true, resize: { width: 20, height: 20 }, blur: 10, format: "jpeg", quality: 80 });
+                                await fsClient.query("QUEUE", generateFullsizeJpeg);
+                                await fsClient.query("QUEUE", generateDownSizeJpeg);
                                 // await sharp(fileBuffer).rotate().withMetadata().resize({ width: 1200 }).jpeg({ quality: 80 }).toFile(fullPath);
                                 // await sharp(fileBuffer).rotate().withMetadata().resize(20).blur(10).jpeg({ quality: 80 }).toFile(downPath);
                         }
@@ -99,8 +104,10 @@ exports.deletePhoto = async (filename) => {
                 const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder, `${id}_full${ext}`);
                 const downPath = path.join(config.media.basePath, config.media.downScaleFolder, `${id}_down${ext}`);
 
-                await fsClient.query("unlink", { inputPath: fullPath });
-                await fsClient.query("unlink", { inputPath: downPath });
+                const deleteFullPath = new FsOperation("unlink", { inputPath: fullPath });
+                const deleteDownPath = new FsOperation("unlink", { inputPath: downPath });
+                await fsClient.query("QUEUE", deleteFullPath);
+                await fsClient.query("QUEUE", deleteDownPath);
 
                 const deletedPhoto = await Photo.deletePhoto(dbClient, id);
 
