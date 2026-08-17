@@ -13,7 +13,7 @@ class FsOperation {
                 this.args = structuredClone(operationArguments ?? {});
                 this.absTempOutput = null;
                 this.prepared = false;
-                this.executed = false;
+                this.committed = false;
                 console.log(`[FsOperation] Constructed op=${this.op}`, this.args);
                 this.validate();
         }
@@ -129,14 +129,12 @@ class FsOperation {
         }
 
         async prepare(stagingDirectory) {
-                // do operations that make the actual execution safe, like saving to staging
-
                 console.log(`[FsOperation] Preparing op=${this.op} stagingDir=${stagingDirectory}`);
                 //move file from input to staging
                 if (this.prepared) {
                         throw new Error(`This operation (${this.op}) is already prepared`);
                 }
-                if (this.executed) {
+                if (this.committed) {
                         throw new Error(`This operation (${this.op}) is already comitted`);
                 }
 
@@ -153,14 +151,14 @@ class FsOperation {
                 this.absTempOutput = absTempOutput;
 
                 switch (this.op) {
-                        // do nothing, cannot backup a newly generated file. Rollback is simply deleting the new file
                         case "sharp":
+                                // await this.prepareSharp(absTempOutput);
                                 break;
-                        // copy file at the temp destination incase of rollback
                         case "unlink":
                         case "rename":
                                 await fs.copyFile(this.args.inputPath, absTempOutput);
                                 break;
+
                         default:
                                 throw new Error(`Unsupported operation: ${this.op}`);
                 }
@@ -168,7 +166,39 @@ class FsOperation {
                 console.log(`[FsOperation] Prepared op=${this.op} temp=${this.absTempOutput}`);
         }
 
-        async generateSharp(outputPath) {
+        async execute() {
+                console.log(`[FsOperation] Executing op=${this.op}`);
+                //move file from staging to final
+                if (!this.prepared) {
+                        throw new Error(`This operation (${this.op}) is not prepared`);
+                }
+                if (this.committed) {
+                        throw new Error(`This operation (${this.op}) is already comitted`);
+                }
+
+                switch (this.op) {
+                        case "sharp":
+                                await this.executeSharp(this.absTempOutput);
+                                await fs.copyFile(this.absTempOutput, this.args.outputPath);
+                                break;
+
+                        case "unlink":
+                                await fs.unlink(this.args.inputPath);
+                                break;
+
+                        case "rename":
+                                await fs.copyFile(this.args.inputPath, this.args.outputPath);
+                                await fs.unlink(this.args.inputPath);
+                                break;
+
+                        default:
+                                throw new Error(`Unsupported operation: ${this.op}`);
+                }
+                this.committed = true;
+                console.log(`[FsOperation] Executed op=${this.op} output=${this.args.outputPath}`);
+        }
+
+        async executeSharp(outputPath) {
                 const args = this.args;
                 const pipeline = sharp(args.inputPath);
 
@@ -199,49 +229,18 @@ class FsOperation {
                 return await pipeline.toFile(outputPath);
         }
 
-        async execute() {
-                //do the actual operation, doesn't matter if fails because rollback will recover from staging
-
-                console.log(`[FsOperation] Executing op=${this.op}`);
-                //move file from staging to final
-                if (!this.prepared) {
-                        throw new Error(`This operation (${this.op}) is not prepared. Not safe to execute.`);
-                }
-                if (this.executed) {
-                        throw new Error(`This operation (${this.op}) is already comitted`);
-                }
-
-                switch (this.op) {
-                        case "sharp":
-                                await this.generateSharp(this.absTempOutput);
-                                break;
-
-                        case "unlink":
-                                await fs.unlink(this.args.inputPath);
-                                break;
-
-                        case "rename":
-                                await fs.rename(this.args.inputPath, this.args.outputPath);
-                                break;
-                        default:
-                                throw new Error(`Unsupported operation: ${this.op}`);
-                }
-                this.executed = true;
-                console.log(`[FsOperation] Executed op=${this.op} output=${this.args.outputPath}`);
-        }
-
         async rollback() {
                 console.log(`[FsOperation] Rolling back op=${this.op}`);
                 if (!this.absTempOutput) {
                         return;
                 }
 
-                if (!this.prepared && !this.executed) {
+                if (!this.prepared && !this.committed) {
                         throw new Error(`This operation (${this.op}) is not prepared or committed, should not be rolled back`);
                 }
 
                 //All that has happened is a file copy was created in staging. So just clear staging
-                if (this.prepared && !this.executed) {
+                if (this.prepared && !this.committed) {
                         switch (this.op) {
                                 case "sharp":
                                         break;
@@ -256,10 +255,11 @@ class FsOperation {
                         }
                 }
 
-                //Filesystem has been modified, recover it using the saved files in staging
-                if (this.prepared && this.executed) {
+                //Filesystem has somehow been modified, recover it using the saved files in staging
+                if (this.prepared && this.committed) {
                         switch (this.op) {
                                 case "sharp":
+                                        await fs.unlink(this.absTempOutput);
                                         await fs.unlink(this.args.outputPath);
                                         break;
                                 case "unlink":
@@ -270,8 +270,8 @@ class FsOperation {
                                 case "rename":
                                         //file at input has been removed, and new file has been copied over to destination. copy in staging still exists
                                         //delete copy at destintation, recover file at input, clean staging
-                                        await fs.copyFile(this.absTempOutput, this.args.inputPath);
                                         await fs.unlink(this.args.outputPath);
+                                        await fs.copyFile(this.absTempOutput, this.args.inputPath);
                                         await fs.unlink(this.absTempOutput);
                                         break;
                                 default:
@@ -280,7 +280,7 @@ class FsOperation {
                 }
 
                 this.prepared = false;
-                this.executed = false;
+                this.committed = false;
                 console.log(`[FsOperation] Rolled back committed op=${this.op}`);
         }
 }
@@ -335,31 +335,6 @@ class FsTransactionClient {
 
                         this.stagedOperations.push(operation);
                         console.log(`[FsTransactionClient] QUEUE → queued op=${operation.op}`);
-
-                        let nextOperation;
-                        try {
-                                nextOperation = this.stagedOperations.shift();
-                                console.log(`[FsTransactionClient] Preparing queued op=${nextOperation.op}`);
-                                await nextOperation.prepare(this.operationDirectory);
-                                this.preparedOperations.push(nextOperation);
-                        } catch (error) {
-                                this.status = "failed_prepare";
-                                console.error(`[FsTransactionClient] QUEUE failed:`, error);
-                                throw new Error(`Failed to prepare: ${error}`);
-                        }
-
-                        try {
-                                nextOperation = this.preparedOperations.shift();
-                                console.log(`[FsTransactionClient] Executing prepared op=${nextOperation.op}`);
-                                await nextOperation.execute();
-                                this.committedOperations.push(nextOperation);
-                                console.log(`[FsTransactionClient] QUEUE complete`);
-                        } catch (error) {
-                                this.status = "failed_commit";
-                                console.error(`[FsTransactionClient] QUEUE failed:`, error);
-                                throw new Error(`Failed to commit: ${error}`);
-                        }
-
                         return;
                 }
 
@@ -367,14 +342,45 @@ class FsTransactionClient {
                 if (normalizedCommand === "COMMIT") {
                         assert.ok(FsTransactionClient.SUPPORTED_STATUSES.has(this.status), "status is invalid");
                         assert.equal(this.status, "active");
-                        assert.equal(this.stagedOperations.length, 0);
-                        assert.equal(this.preparedOperations.length, 0);
-                        await fs.rm(this.operationDirectory, { recursive: true, force: true });
-                        this.operationDirectory = undefined;
 
-                        this.status = "committed";
-                        console.log(`[FsTransactionClient] COMMIT → finalized`);
-                        return;
+                        let nextOperation;
+                        try {
+                                this.status = "preparing";
+                                while (this.stagedOperations.length > 0) {
+                                        nextOperation = this.stagedOperations.shift();
+                                        console.log(`[FsTransactionClient] Preparing queued op=${nextOperation.op}`);
+                                        await nextOperation.prepare(this.operationDirectory);
+                                        this.preparedOperations.push(nextOperation);
+                                }
+                                this.status = "prepared";
+                        } catch (error) {
+                                this.status = "failed_prepare";
+                                console.error(`[FsTransactionClient] COMMIT failed:`, error);
+                                throw new Error(`Failed to prepare: ${error}`);
+                        }
+
+                        try {
+                                this.status = "committing";
+                                while (this.preparedOperations.length > 0) {
+                                        nextOperation = this.preparedOperations.shift();
+                                        console.log(`[FsTransactionClient] Executing prepared op=${nextOperation.op}`);
+                                        await nextOperation.execute();
+                                        this.committedOperations.push(nextOperation);
+                                }
+
+                                await fs.rm(this.operationDirectory, {
+                                        recursive: true,
+                                        force: true,
+                                });
+
+                                this.operationDirectory = undefined;
+                                this.status = "committed";
+                                console.log(`[FsTransactionClient] COMMIT complete`);
+                        } catch (error) {
+                                this.status = "failed_commit";
+                                console.error(`[FsTransactionClient] COMMIT failed:`, error);
+                                throw new Error(`Failed to commit: ${error}`);
+                        }
                 }
 
                 if (normalizedCommand === "ROLLBACK") {
