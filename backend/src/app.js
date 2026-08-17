@@ -10,9 +10,9 @@ const photoRoutes = require("./routes/photoRoutes");
 photoService.statusCheck();
 
 const app = express();
-app.use(logger);
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(logger);
 
 console.log("Mounting /test");
 app.get("/api/test", (req, res) => res.send("OK"));

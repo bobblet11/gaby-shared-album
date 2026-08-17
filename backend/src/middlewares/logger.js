@@ -6,12 +6,10 @@ const logger = (req, res, next) => {
         const url = req.originalUrl || req.url;
 
         // stringify body safely
-        const body = req.body && Object.keys(req.body).length > 0 ? JSON.stringify(req.body) : "";
+        const body = req.body && Object.keys(req.body).length > 0 ? JSON.stringify(req.body) : "<empty>";
 
-        // check for file uploads (multer, busboy, etc.)
         const files = req.files || req.file;
-        let fileInfo = "";
-        
+        let fileInfo = "<none>";
         if (files) {
                 if (Array.isArray(files)) {
                         fileInfo = files.map((f) => f.originalname).join(", ");
