@@ -2,9 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhotoUpload } from "../hooks/usePhotosUpload";
 import { config } from "../configs/config.js";
-import HomePage from "./Home.jsx";
+import PageBanner from "../components/PageBanner.jsx";
+import Spinner from "../components/Spinner.jsx";
+import PropTypes from "prop-types";
 
-export default function UploadPage() {
+export default function UploadPage({ variant = "default" }) {
         const navigate = useNavigate();
 
         const { title, caption, dragOver, isMultipleFilesSelected, previewUrls, handleSubmit, isUploading, onFileDrop, onFileDragOver, onFileDragLeave, onSelectedFilesChange, updateTitle, updateCaption } = usePhotoUpload();
@@ -19,7 +21,8 @@ export default function UploadPage() {
 
         return (
                 <div className="upload-page">
-                        <PageBanner title={"Gaby&apos;s Corkboard"} nextPageName={"Home"} goToNextPage={goToHomePage} />
+                        {/* <PageBanner title="Gaby&apos;s Corkboard" nextPageName="Home" goToNextPage={goToHomePage} variant="anniversary"/> */}
+                        <PageBanner title="Happy Anniversary 💖" nextPageName="Home" goToNextPage={goToHomePage} variant="default" />
 
                         <div className="upload-card">
                                 <div className="upload-header">
@@ -27,7 +30,7 @@ export default function UploadPage() {
                                 </div>
 
                                 <form className="upload-form" onSubmit={handleSubmit}>
-                                        {isUploading && <div className="spinner" style={{ margin: "4rem auto" }}></div>}
+                                        {isUploading && <Spinner variant={variant} style={{ margin: "4rem auto" }} />}
                                         {!isUploading && (
                                                 <>
                                                         <div className={`upload-dropzone ${dragOver ? "drag-over" : ""}`} onDrop={(e) => onFileDrop(e)} onDragOver={(e) => onFileDragOver(e)} onDragLeave={(e) => onFileDragLeave(e)}>
@@ -62,3 +65,8 @@ export default function UploadPage() {
                 </div>
         );
 }
+
+
+UploadPage.propTypes = {
+        variant: PropTypes.string.isRequired,
+};

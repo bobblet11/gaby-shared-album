@@ -1,38 +1,39 @@
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import Photo from "./Photo";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import PropTypes from "prop-types";
 import { usePhotoActions } from "../hooks/usePhotoActions";
 import { usePhotoDetail } from "../hooks/usePhotoDetail";
+import Spinner from "./Spinner";
 
-export default function PhotoBoard({ photos = [] }) {
+export default function PhotoBoard({ photos = [], variant = "default" }) {
         const boardRef = useRef(null);
 
-        const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption} = usePhotoDetail();
+        const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption } = usePhotoDetail();
         const { isUploading, isDeleting, isDownloading, handleDelete, handleEditSubmit, handleDownload } = usePhotoActions(openPhoto, editDraft);
         return (
                 <>
                         {openPhoto && (
                                 <div
-                                        className="photo-modal-backdrop"
+                                        className={`photo-modal-backdrop ${variant}`}
                                         onClick={() => {
                                                 if (!(isEditingPhoto || isUploading || isDeleting || isDownloading)) onClosePhoto();
                                         }}
                                 >
                                         {(isDeleting || isDownloading) && (
-                                                <div className="spinner-overlay">
-                                                        <div
-                                                                className="spinner"
+                                                <div className={`spinner-overlay ${variant}`}>
+                                                        <Spinner
+                                                                variant={variant}
                                                                 style={{
                                                                         width: "10vw",
                                                                         height: "10vw",
                                                                 }}
-                                                        ></div>
+                                                        />
                                                 </div>
                                         )}
 
                                         {isEditingPhoto && editDraft && (
-                                                <div className="photo-modal-backdrop" onClick={() => isEditingPhoto && !isUploading && onExitEdit()}>
+                                                <div className={`photo-modal-backdrop ${variant}`} onClick={() => isEditingPhoto && !isUploading && onExitEdit()}>
                                                         <div className="upload-card" onClick={(e) => e.stopPropagation()}>
                                                                 <div className="upload-header">
                                                                         <h1>{`Edit image ${openPhoto.title}`}</h1>
@@ -40,7 +41,7 @@ export default function PhotoBoard({ photos = [] }) {
                                                                                 ×
                                                                         </button>
                                                                 </div>
-                                                                {isUploading && <div className="spinner" style={{ margin: "4rem auto" }}></div>}
+                                                                {isUploading && <Spinner variant={variant} style={{ margin: "4rem auto" }} />}
                                                                 {!isUploading && (
                                                                         <form className="upload-form" onSubmit={handleEditSubmit}>
                                                                                 <input type="text" placeholder="Title" value={editDraft.title} onChange={(e) => updateTitle(e)} disabled={isUploading} />
@@ -91,7 +92,7 @@ export default function PhotoBoard({ photos = [] }) {
                                 </div>
                         )}
 
-                        <div ref={boardRef} className="photo-board">
+                        <div ref={boardRef} className={`photo-board ${variant}`}>
                                 {photos.map((photo) => (
                                         <Photo key={photo.id} {...photo} onOpenPhoto={onOpenPhoto} />
                                 ))}
@@ -116,4 +117,5 @@ PhotoBoard.propTypes = {
                         offsetY: PropTypes.number.isRequired,
                 }),
         ).isRequired,
+        variant: PropTypes.string,
 };

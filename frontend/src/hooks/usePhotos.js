@@ -15,6 +15,7 @@ export function usePhotos() {
                         setIsFetchingPhotos(true);
 
                         if (!config.api.use_api || !config.api.domain) {
+                                await new Promise((resolve) => setTimeout(resolve, 5000));
                                 setPhotos(PLACEHOLDER_PHOTOS);
                         } else {
                                 const photos = await getAllPhotos();
