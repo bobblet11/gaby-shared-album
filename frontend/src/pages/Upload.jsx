@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhotoUpload } from "../hooks/usePhotosUpload";
 import { config } from "../configs/config.js";
+import HomePage from "./Home.jsx";
 
 export default function UploadPage() {
         const navigate = useNavigate();
@@ -18,12 +19,7 @@ export default function UploadPage() {
 
         return (
                 <div className="upload-page">
-                        <header className="top-banner">
-                                <div className="title-card">Gaby&apos;s Corkboard</div>
-                                <button className="upload-button" onClick={goToHomePage} disabled={isUploading}>
-                                        Home
-                                </button>
-                        </header>
+                        <PageBanner title={"Gaby&apos;s Corkboard"} nextPageName={"Home"} goToNextPage={goToHomePage} />
 
                         <div className="upload-card">
                                 <div className="upload-header">

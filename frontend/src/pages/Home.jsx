@@ -2,6 +2,7 @@ import React from "react";
 import PhotoBoard from "../components/PhotoBoard";
 import { useNavigate } from "react-router-dom";
 import { usePhotos } from "../hooks/usePhotos";
+import PageBanner from "../components/PageBanner";
 
 export default function HomePage() {
         const { transformedPhotos, isFetchingPhotos } = usePhotos();
@@ -18,12 +19,7 @@ export default function HomePage() {
 
         return (
                 <div className="home-page">
-                        <header className="top-banner">
-                                <div className="title-card">Gaby&apos;s Corkboard</div>
-                                <button className="upload-button" onClick={goToUploadPage}>
-                                        Upload
-                                </button>
-                        </header>
+                        <PageBanner title={"Gaby&apos;s Corkboard"} nextPageName={"Upload"} goToNextPage={goToUploadPage} />
                         <main className="home-main">
                                 {isFetchingPhotos && <div className="spinner" style={{ margin: "4rem auto" }}></div>}
                                 {!isFetchingPhotos && <PhotoBoard photos={transformedPhotos} />}
