@@ -1,0 +1,23 @@
+/* pageBanner.css */
+
+.top-banner {
+        height: 72px;
+        background: #f8a7c6;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        max-width: 100vw;
+}
+
+.title-card {
+        font-size: clamp(1.3rem, 2vw, 1.5rem);
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}

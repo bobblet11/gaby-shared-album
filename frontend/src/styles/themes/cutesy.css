@@ -1,0 +1,88 @@
+
+.top-banner.cutesy {
+        background: linear-gradient(45deg, rgb(248, 129, 189), rgb(243, 75, 165), rgb(209, 148, 159));
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-shadow:
+                0 0 10px white,
+                0 0 20px magenta;
+        animation: pulse 2s infinite;
+}
+
+.title-card.cutesy {
+        animation: sparkle 3s infinite;
+}
+
+@keyframes pulse {
+        0% {
+                transform: scale(1);
+        }
+        50% {
+                transform: scale(1.01);
+        }
+        100% {
+                transform: scale(1);
+        }
+}
+
+@keyframes sparkle {
+        0% {
+                text-shadow:
+                        0 0 5px white,
+                        0 0 10px pink;
+        }
+        50% {
+                text-shadow:
+                        0 0 20px magenta,
+                        0 0 40px hotpink;
+        }
+        100% {
+                text-shadow:
+                        0 0 5px white,
+                        0 0 10px pink;
+        }
+}
+
+/* ----------------- */
+
+.photo-board.cutesy {
+        background-image: url("https://static.vecteezy.com/system/resources/previews/016/181/872/non_2x/lily-flower-floral-seamless-repeat-pattern-lilies-vector.jpg");
+        background-size: auto; /* scale to fill */
+        background-repeat: repeat; /* no tiling */
+        background-position: center; /* center the image */
+}
+
+
+/* ----------------- */
+
+.spinner.cutesy {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 20px auto;
+}
+
+.spinner.cutesy::before {
+        content: "💖";
+        font-size: 3rem;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: pulse2 1s infinite;
+}
+
+@keyframes pulse2 {
+        0% {
+                transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+                transform: translate(-50%, -50%) scale(1.3);
+        }
+        100% {
+                transform: translate(-50%, -50%) scale(1);
+        }
+}

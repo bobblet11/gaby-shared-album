@@ -1,0 +1,46 @@
+/* modal.css */
+
+.photo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photo-modal-image-container {
+  width: min(92vw, 1200px);
+  max-height: 88vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: grab;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.photo-modal-buttons {
+  position: absolute;
+  display: flex;
+  gap: 1rem;
+  top: 50px;
+  right: 50px;
+  z-index: 9998;
+}

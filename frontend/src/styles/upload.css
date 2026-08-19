@@ -1,0 +1,209 @@
+/* upload.css */
+
+.upload-button {
+        background: white;
+        color: #f8a7c6;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1rem;
+        transition:
+                transform 0.15s,
+                background 0.15s;
+}
+
+.upload-button:hover {
+        transform: translateY(-2px);
+        background: #fff0f5;
+}
+
+button.upload-button[disabled],
+.upload-form input[disabled],
+.upload-form textarea[disabled],
+.upload-form button[disabled],
+.upload-form .file-upload-button input[disabled],
+.edit-form input[disabled],
+.edit-form textarea[disabled],
+.edit-form button[disabled],
+.edit-form .file-upload-button input[disabled]  {
+        background-color: #e0e0e0; /* light grey background */
+        color: #888; /* grey text */
+        cursor: not-allowed; /* show blocked cursor */
+        opacity: 0.6; /* fade out */
+        pointer-events: none; /* prevent interaction */
+}
+
+.upload-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 0;
+}
+
+.upload-card {
+        position: relative;
+        width: min(90vw, 520px);
+        max-width: 520px;
+        margin: auto;
+        flex: 0 0 auto;
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.upload-header {
+        text-align: center;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+}
+
+.upload-header h1 {
+        font-size: clamp(1.5rem, 2.5vw, 1.8rem);
+        color: #d63384;
+        margin: 0;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+}
+
+.upload-form {
+        position: relative;
+        min-height: 50vh;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        justify-content: space-between;
+}
+
+.edit-form {
+        position: relative;
+        min-height: 25vh;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        justify-content: space-between;
+}
+
+.upload-dropzone {
+        border: 2px dashed #f8a7c6;
+        border-radius: 8px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        background: #fff9fb;
+        transition:
+                background 0.15s,
+                border-color 0.15s;
+}
+
+.upload-dropzone.drag-over {
+        background: #ffeef5;
+        border-color: #d63384;
+}
+
+.upload-dropzone input {
+        display: none;
+}
+
+.upload-preview-slider {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 10px 0;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+}
+
+.upload-preview-item {
+        flex: 0 0 auto;
+        scroll-snap-align: center;
+        margin: auto;
+}
+
+.upload-preview {
+        max-height: 180px;
+        border-radius: 8px;
+        object-fit: cover;
+        display: block;
+}
+
+/* File upload button (inside dropzone) */
+.file-upload-button {
+        display: inline-block;
+        background: #f8a7c6; /* soft pink */
+        color: white;
+        padding: 12px 20px;
+        margin-top: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+}
+
+.file-upload-button:hover {
+        background: #e68fb5; /* deeper pink on hover */
+        transform: translateY(-1px);
+}
+
+.file-upload-button:active {
+        background: #d63384; /* strong pink when pressed */
+        transform: scale(0.97);
+}
+
+/* Ensure text inside dropzone is mobile-friendly */
+.upload-dropzone p {
+        font-size: 0.95rem;
+        color: #d63384;
+        margin-bottom: 10px;
+}
+
+.upload-form input[type="text"],
+.upload-form input[type="date"],
+.upload-form textarea,
+.edit-form input[type="text"],
+.edit-form input[type="date"],
+.edit-form textarea {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-family: inherit;
+}
+
+.edit-form textarea,
+.upload-form textarea {
+        min-height: 80px;
+        resize: vertical;
+}
+
+.edit-form button,
+.upload-form button {
+        background: #f8a7c6;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition:
+                background 0.15s,
+                transform 0.15s;
+        margin-bottom: 0;
+}
+
+.upload-form button:hover,
+.upload-form button:hover {
+        background: #e68fb5;
+        transform: translateY(-1px);
+}
