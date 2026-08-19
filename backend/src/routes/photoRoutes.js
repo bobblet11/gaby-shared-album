@@ -11,6 +11,4 @@ router.post("/", upload.array("image"), uploadPhoto);
 router.delete("/:filename", deletePhoto);
 router.put("/:filename", editPhoto)
 
-console.log("photoRoutes loaded");
-
 module.exports = router;

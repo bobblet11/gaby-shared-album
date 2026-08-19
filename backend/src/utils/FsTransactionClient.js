@@ -14,7 +14,7 @@ class FsOperation {
                 this.absTempOutput = null;
                 this.prepared = false;
                 this.committed = false;
-                console.log(`[FsOperation] Constructed op=${this.op}`, this.args);
+                // console.log(`[FsOperation] Constructed op=${this.op}`, this.args);
                 this.validate();
         }
 
@@ -43,7 +43,7 @@ class FsOperation {
         }
 
         validate() {
-                console.log(`[FsOperation] Validating op=${this.op}, args=${this.args}`);
+                // console.log(`[FsOperation] Validating op=${this.op}, args=${this.args}`);
                 assert.ok(FsOperation.SUPPORTED_OPERATIONS.has(this.op), `Unsupported filesystem operation: ${this.op}`);
                 assert.ok(this.args && typeof this.args === "object" && !Array.isArray(this.args), "operation arguments must be an object");
                 switch (this.op) {
@@ -129,7 +129,7 @@ class FsOperation {
         }
 
         async prepare(stagingDirectory) {
-                console.log(`[FsOperation] Preparing op=${this.op} stagingDir=${stagingDirectory}`);
+                //console.log(`[FsOperation] Preparing op=${this.op} stagingDir=${stagingDirectory}`);
                 //move file from input to staging
                 if (this.prepared) {
                         throw new Error(`This operation (${this.op}) is already prepared`);
@@ -163,11 +163,11 @@ class FsOperation {
                                 throw new Error(`Unsupported operation: ${this.op}`);
                 }
                 this.prepared = true;
-                console.log(`[FsOperation] Prepared op=${this.op} temp=${this.absTempOutput}`);
+                //console.log(`[FsOperation] Prepared op=${this.op} temp=${this.absTempOutput}`);
         }
 
         async execute() {
-                console.log(`[FsOperation] Executing op=${this.op}`);
+                //console.log(`[FsOperation] Executing op=${this.op}`);
                 //move file from staging to final
                 if (!this.prepared) {
                         throw new Error(`This operation (${this.op}) is not prepared`);
@@ -195,7 +195,7 @@ class FsOperation {
                                 throw new Error(`Unsupported operation: ${this.op}`);
                 }
                 this.committed = true;
-                console.log(`[FsOperation] Executed op=${this.op} output=${this.args.outputPath}`);
+                //console.log(`[FsOperation] Executed op=${this.op} output=${this.args.outputPath}`);
         }
 
         async executeSharp(outputPath) {
@@ -230,7 +230,7 @@ class FsOperation {
         }
 
         async rollback() {
-                console.log(`[FsOperation] Rolling back op=${this.op}`);
+                //console.log(`[FsOperation] Rolling back op=${this.op}`);
                 if (!this.absTempOutput) {
                         return;
                 }
@@ -281,7 +281,7 @@ class FsOperation {
 
                 this.prepared = false;
                 this.committed = false;
-                console.log(`[FsOperation] Rolled back committed op=${this.op}`);
+                //console.log(`[FsOperation] Rolled back committed op=${this.op}`);
         }
 }
 
@@ -295,12 +295,12 @@ class FsTransactionClient {
                 this.status = "idle";
                 this.stagingPath = stagingPath;
                 this.operationDirectory;
-                console.log(`[FsTransactionClient] Created with stagingPath=${stagingPath}`);
+                //console.log(`[FsTransactionClient] Created with stagingPath=${stagingPath}`);
         }
 
         async query(command, operation) {
                 const normalizedCommand = command.toUpperCase();
-                console.log(`[FsTransactionClient] Query command=${normalizedCommand} status=${this.status}`);
+                //console.log(`[FsTransactionClient] Query command=${normalizedCommand} status=${this.status}`);
 
                 //start transcation
                 if (normalizedCommand === "BEGIN") {
@@ -320,7 +320,7 @@ class FsTransactionClient {
                                 });
                                 this.operationDirectory = absOperationDirectory;
                         }
-                        console.log(`[FsTransactionClient] BEGIN → operationDirectory=${this.operationDirectory}`);
+                        //console.log(`[FsTransactionClient] BEGIN → operationDirectory=${this.operationDirectory}`);
                         return;
                 }
 
@@ -334,7 +334,7 @@ class FsTransactionClient {
                         }
 
                         this.stagedOperations.push(operation);
-                        console.log(`[FsTransactionClient] QUEUE → queued op=${operation.op}`);
+                        //console.log(`[FsTransactionClient] QUEUE → queued op=${operation.op}`);
                         return;
                 }
 
@@ -348,14 +348,14 @@ class FsTransactionClient {
                                 this.status = "preparing";
                                 while (this.stagedOperations.length > 0) {
                                         nextOperation = this.stagedOperations.shift();
-                                        console.log(`[FsTransactionClient] Preparing queued op=${nextOperation.op}`);
+                                        //console.log(`[FsTransactionClient] Preparing queued op=${nextOperation.op}`);
                                         await nextOperation.prepare(this.operationDirectory);
                                         this.preparedOperations.push(nextOperation);
                                 }
                                 this.status = "prepared";
                         } catch (error) {
                                 this.status = "failed_prepare";
-                                console.error(`[FsTransactionClient] COMMIT failed:`, error);
+                                //console.error(`[FsTransactionClient] COMMIT failed:`, error);
                                 throw new Error(`Failed to prepare: ${error}`);
                         }
 
@@ -363,7 +363,7 @@ class FsTransactionClient {
                                 this.status = "committing";
                                 while (this.preparedOperations.length > 0) {
                                         nextOperation = this.preparedOperations.shift();
-                                        console.log(`[FsTransactionClient] Executing prepared op=${nextOperation.op}`);
+                                        //console.log(`[FsTransactionClient] Executing prepared op=${nextOperation.op}`);
                                         await nextOperation.execute();
                                         this.committedOperations.push(nextOperation);
                                 }
@@ -375,16 +375,16 @@ class FsTransactionClient {
 
                                 this.operationDirectory = undefined;
                                 this.status = "committed";
-                                console.log(`[FsTransactionClient] COMMIT complete`);
+                                //console.log(`[FsTransactionClient] COMMIT complete`);
                         } catch (error) {
                                 this.status = "failed_commit";
-                                console.error(`[FsTransactionClient] COMMIT failed:`, error);
+                                //console.error(`[FsTransactionClient] COMMIT failed:`, error);
                                 throw new Error(`Failed to commit: ${error}`);
                         }
                 }
 
                 if (normalizedCommand === "ROLLBACK") {
-                        console.log(`[FsTransactionClient] ROLLBACK starting`);
+                        //console.log(`[FsTransactionClient] ROLLBACK starting`);
                         assert.ok(FsTransactionClient.SUPPORTED_STATUSES.has(this.status), "status is invalid");
                         assert.ok(["active", "preparing", "prepared", "committing", "failed_prepare", "failed_commit", "committed"].includes(this.status));
 
@@ -402,10 +402,10 @@ class FsTransactionClient {
                                 }
 
                                 this.status = "rolled_back";
-                                console.log(`[FsTransactionClient] ROLLBACK complete`);
+                                //console.log(`[FsTransactionClient] ROLLBACK complete`);
                         } catch (error) {
                                 this.status = "failed_rollback";
-                                console.error(`[FsTransactionClient] ROLLBACK failed:`, error);
+                                //console.error(`[FsTransactionClient] ROLLBACK failed:`, error);
                                 throw new Error(`Failed to commit: ${error}`);
                         } finally {
                                 if (this.operationDirectory) {
