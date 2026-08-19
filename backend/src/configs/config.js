@@ -1,6 +1,6 @@
 const path = require("path");
 require("dotenv").config();
-
+const logger = require("./winston")
 
 const config = {
         db: {
@@ -22,6 +22,11 @@ const config = {
                 originalScaleFolder: process.env.ORIGINAL_SCALE_IMAGE_FOLDER_NAME || "orig",
                 fullScaleFolder: process.env.FULL_SCALE_IMAGE_FOLDER_NAME || "full",
                 downScaleFolder: process.env.DOWN_SCALE_IMAGE_FOLDER_NAME || "down",
+        },
+
+        metrics: {
+                host: process.env.METRICS_HOST || "localhost",
+                port: parseInt(process.env.METRICS_PORT, 10) || 8125,
         },
 };
 
@@ -54,9 +59,9 @@ function maskConfig(obj, hidden) {
 
 // Pretty‑print config when app runs
 if (process.env.NODE_ENV !== "test") {
-        console.log("=== Application Configuration ===");
-        console.log(JSON.stringify(maskConfig(config, hiddenKeys), null, 2));
-        console.log("=================================");
+        logger.info("=== Application Configuration ===");
+        logger.info(JSON.stringify(maskConfig(config, hiddenKeys), null, 2));
+        logger.info("=================================");
 }
 
 module.exports = config;
