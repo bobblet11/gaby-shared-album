@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "../styles/styles.css";
 
 export default function PageBanner({ title, nextPageName, goToNextPage, variant = "default" }) {
         return (
