@@ -41,7 +41,7 @@ const wrapInFsAndDbTransaction = (db, stagingPath, func, args = []) => {
 
                         return result;
                 } catch (err) {
-                        console.error(err);
+                        //console.error(err);
                         try {
                                 if (dbClient) await dbClient.query("ROLLBACK");
                                 if (fsClient) await fsClient.query("ROLLBACK");

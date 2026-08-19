@@ -18,7 +18,6 @@ exports.uploadPhoto = asyncHandler(async (req, res) => {
         const { title, caption } = req.body;
         const files = Array.isArray(req.files) ? req.files : [];
         if (files.length === 0) throw new BadRequestError("No files uploaded");
-        console.log(files);
         if (title && title.length > 100) throw new ValidationError("Title must be less than 100 characters.");
         if (caption && caption.length > 500) throw new ValidationError("Caption must be less than 500 characters.");
 
