@@ -20,12 +20,26 @@ export default function HomePage({ variant = "default" }) {
         };
 
         return (
-                <div className="home-page">
+                <div className="page home-page">
                         {/* <PageBanner title="Gaby&apos;s Corkboard" nextPageName="Upload" goToNextPage={goToUploadPage} variant="default"/> */}
-                        <PageBanner title="Happy Anniversary 💖" nextPageName="Upload" goToNextPage={goToUploadPage} variant={variant} />
+                        <PageBanner title="Gaby's Photo App" nextPageName="Upload" goToNextPage={goToUploadPage} variant={variant} />
 
                         <main className="home-main">
-                                {isFetchingPhotos && <Spinner variant={variant} style={{ margin: "4rem auto" }} />}
+                                {isFetchingPhotos && (
+                                        <div
+                                                style={{
+                                                        position: "fixed",
+                                                        inset: 0,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        zIndex: 10000,
+                                                        background: "rgba(0,0,0,0)", // optional transparent overlay
+                                                }}
+                                        >
+                                                <Spinner variant={variant} />
+                                        </div>
+                                )}
                                 {!isFetchingPhotos && <PhotoBoard photos={transformedPhotos} variant={variant} />}
                         </main>
                 </div>

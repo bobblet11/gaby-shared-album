@@ -5,56 +5,33 @@ import PropTypes from "prop-types";
 import { usePhotoActions } from "../hooks/usePhotoActions";
 import { usePhotoDetail } from "../hooks/usePhotoDetail";
 import Spinner from "./Spinner";
+import EditForm from "./EditForm";
+import ModalOverlay from "./ModalOverlay";
 
 export default function PhotoBoard({ photos = [], variant = "default" }) {
-        const boardRef = useRef(null);
-
         const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption } = usePhotoDetail();
         const { isUploading, isDeleting, isDownloading, handleDelete, handleEditSubmit, handleDownload } = usePhotoActions(openPhoto, editDraft);
         return (
                 <>
                         {openPhoto && (
-                                <div
-                                        className={`photo-modal-backdrop ${variant}`}
+                                <ModalOverlay
+                                        variant={variant}
                                         onClick={() => {
                                                 if (!(isEditingPhoto || isUploading || isDeleting || isDownloading)) onClosePhoto();
                                         }}
                                 >
                                         {(isDeleting || isDownloading) && (
-                                                <div className={`spinner-overlay ${variant}`}>
+                                                <ModalOverlay variant={variant}>
                                                         <Spinner
                                                                 variant={variant}
-                                                                style={{
-                                                                        width: "10vw",
-                                                                        height: "10vw",
-                                                                }}
                                                         />
-                                                </div>
+                                                </ModalOverlay>
                                         )}
 
                                         {isEditingPhoto && editDraft && (
-                                                <div className={`photo-modal-backdrop ${variant}`} onClick={() => isEditingPhoto && !isUploading && onExitEdit()}>
-                                                        <div className="upload-card" onClick={(e) => e.stopPropagation()}>
-                                                                <div className="upload-header">
-                                                                        <h1>{`Edit image ${openPhoto.title}`}</h1>
-                                                                        <button type="button" className="close-btn" onClick={onExitEdit} disabled={isUploading} aria-label="Close edit panel">
-                                                                                ×
-                                                                        </button>
-                                                                </div>
-                                                                {isUploading && <Spinner variant={variant} style={{ margin: "4rem auto" }} />}
-                                                                {!isUploading && (
-                                                                        <form className="upload-form" onSubmit={handleEditSubmit}>
-                                                                                <input type="text" placeholder="Title" value={editDraft.title} onChange={(e) => updateTitle(e)} disabled={isUploading} />
-
-                                                                                <textarea placeholder="Caption" value={editDraft.caption} onChange={(e) => updateCaption(e)} disabled={isUploading} />
-
-                                                                                <button type="submit" disabled={isUploading || !isDirty}>
-                                                                                        Submit edit
-                                                                                </button>
-                                                                        </form>
-                                                                )}
-                                                        </div>
-                                                </div>
+                                                <ModalOverlay variant={variant} onClick={() => isEditingPhoto && !isUploading && onExitEdit()}>
+                                                        <EditForm variant={variant} style={{}} isUploading={isUploading} openPhoto={openPhoto} onExitEdit={onExitEdit} handleEditSubmit={handleEditSubmit} editDraft={editDraft} isDirty={isDirty} updateTitle={updateTitle} updateCaption={updateCaption} />
+                                                </ModalOverlay>
                                         )}
 
                                         <div className="photo-modal-image-container" onClick={(e) => e.stopPropagation()}>
@@ -89,10 +66,10 @@ export default function PhotoBoard({ photos = [], variant = "default" }) {
                                                         </button>
                                                 </div>
                                         </div>
-                                </div>
+                                </ModalOverlay>
                         )}
 
-                        <div ref={boardRef} className={`photo-board ${variant}`}>
+                        <div className={`photo-board ${variant}`}>
                                 {photos.map((photo) => (
                                         <Photo key={photo.id} {...photo} onOpenPhoto={onOpenPhoto} />
                                 ))}
