@@ -28,6 +28,10 @@ const config = {
                 host: process.env.METRICS_HOST || "localhost",
                 port: parseInt(process.env.METRICS_PORT, 10) || 8125,
         },
+
+        logs: {
+                logFilePath: process.env.LOGS_FILE_PATH || "/var/log/app.log",
+        },
 };
 
 // Hard‑coded list of keys to hide when printing
