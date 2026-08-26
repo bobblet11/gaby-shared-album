@@ -9,57 +9,148 @@ on:
                         - refactor
 
 jobs:
-        ci-lint-build:
+        lint-ci-build-upload:
                 environment: prod
                 runs-on: ubuntu-latest
                 steps:
                         - name: Checkout repo
                           uses: actions/checkout@v4
 
-                        - name: Install all dependencies
-                          run: npm ci
-
                         - name: Lint project
                           run: npm run lint
 
-                        - name: Create production env file
+                        - name: Build frontend Docker image
                           run: |
-                                  FRONTEND_ENV_PATH="./frontend/.env.production"
-                                  echo "Updating frontend .env.production..."
-                                  mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
-                                  echo "REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}" >> $FRONTEND_ENV_PATH
-                                  echo "REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }}" >> $FRONTEND_ENV_PATH
+                                set -euo pipefail
+                                
+                                docker build \
+                                --build-arg REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }} \
+                                --build-arg REACT_APP_FEATURE_FLAG=${{ vars.REACT_APP_FEATURE_FLAG }} \
+                                --build-arg REACT_APP_MAX_FILES_PER_UPLOAD=${{ vars.REACT_APP_MAX_FILES_PER_UPLOAD }} \
+                                -t ghcr.io/${{ github.repository }}/frontend:${{ github.sha }} \
+                                -f infra/docker/frontend/Dockerfile .
 
-                        - name: Show frontend .env.production
-                          run: cat ./frontend/.env.production
-
-                        - name: Build frontend
+                        - name: Build backend Docker image
                           run: |
-                                  NODE_ENV=production npm run build --workspace frontend
+                                set -euo pipefail
 
-                        - name: Inspect built frontend for env vars
+                                docker build \
+                                -t ghcr.io/${{ github.repository }}/backend:${{ github.sha }} \
+                                -f infra/docker/backend/Dockerfile .
+
+                        - name: Push frontend Docker image
                           run: |
-                                  grep -R "REACT_APP_API_URL" frontend/build || true
-                                  grep -R "REACT_APP_FEATURE_FLAG" frontend/build || true
+                                set -euo pipefail
+                                echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                                docker push ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
 
-                        - name: Upload build artifact
-                          uses: actions/upload-artifact@v4
-                          with:
-                                  name: react-build
-                                  path: frontend/build
+                        - name: Push backend Docker image
+                          run: |
+                                set -euo pipefail
+                                echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                                docker push ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
-        deploy:
+        prep-download-deploy:
                 runs-on: ubuntu-latest
                 environment: prod
-                needs: ci-lint-build
+                needs: lint-ci-build-upload
                 steps:
-                        - name: Download build artifact
-                          uses: actions/download-artifact@v4
+                        - name: Ensure all folders & files exist
+                          uses: appleboy/ssh-action@v0.1.10
                           with:
-                                  name: react-build
-                                  path: build
+                                host: ${{ secrets.TARGET_HOST }}
+                                username: ${{ secrets.TARGET_USER }}
+                                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                port: ${{ secrets.TARGET_PORT }}
 
-                        - name: Ensure folder for build exists
+                                proxy_host: ${{ secrets.GATEWAY_HOST }}
+                                proxy_port: ${{ secrets.GATEWAY_PORT }}
+                                proxy_username: ${{ secrets.GATEWAY_USER }}
+                                proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                script: |
+                                        echo "----------------------------------------------" 
+                                        set -euo pipefail
+                                        echo "Creating volume folders..."  
+                                        
+                                        export EXTERNAL_STATIC_MEDIA_PATH="/var/www/${{ github.event.repository.name }}/uploads"
+                                        export DOWN_SCALE_IMAGE_FOLDER_NAME="${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
+                                        export FULL_SCALE_IMAGE_FOLDER_NAME="${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME}}"
+                                        export ORIGINAL_SCALE_IMAGE_FOLDER_NAME="${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
+                                        export TEMP_SCALE_IMAGE_FOLDER_NAME="${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"   
+
+                                        # volumes
+                                        sudo mkdir -p "${EXTERNAL_STATIC_MEDIA_PATH}"
+                                        sudo mkdir -p "${EXTERNAL_STATIC_MEDIA_PATH}/${DOWN_SCALE_IMAGE_FOLDER_NAME}"
+                                        sudo mkdir -p "${EXTERNAL_STATIC_MEDIA_PATH}/${FULL_SCALE_IMAGE_FOLDER_NAME}"
+                                        sudo mkdir -p "${EXTERNAL_STATIC_MEDIA_PATH}/${ORIGINAL_SCALE_IMAGE_FOLDER_NAME}"
+                                        sudo mkdir -p "${EXTERNAL_STATIC_MEDIA_PATH}/${TEMP_SCALE_IMAGE_FOLDER_NAME}"
+
+                                        sudo mkdir -p "/srv/${{ github.event.repository.name }}"
+                                        sudo chown -R "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
+                                        sudo chown -R "$USER:$USER" "/srv/${{ github.event.repository.name }}"
+
+                                        echo "External media folders generated..."
+
+                                        # repo
+                                        echo "----------------------------------------------" 
+                                        echo "Pulling latest code..."   
+                                        export REPO_OWNER="${{ github.repository_owner }}"
+                                        export GITHUB_ACTOR="${{github.actor}}"
+                                        export ACCOUNT_TOKEN="${{ secrets.ACCOUNT_TOKEN }}"
+                                        export PROJECT_PATH="/srv/${{ github.event.repository.name }}"
+                                        export BRANCH="${{ github.ref_name }}"
+                                        
+
+                                        if [ ! -d "${PROJECT_PATH}/.git" ]; then
+                                        echo "Cloning repo..."
+                                        git clone --branch "$BRANCH" "https://${GITHUB_ACTOR}:${ACCOUNT_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
+                                        else
+                                        echo "Updating repo..."
+                                        cd "$PROJECT_PATH"
+                                        git fetch origin "$BRANCH"
+                                        git reset --hard "origin/$BRANCH"
+                                        fi
+
+                                        echo "----------------------------------------------" 
+                                        export PUBLIC_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}
+                                        export API_PORT="${{ vars.API_PORT }}"
+                                        export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
+                                        : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
+
+                                        echo "Generating nginx config..."  
+                                        sudo cat > ${PROJECT_PATH}/infra/nginx/frontend.conf <<EOF
+                                        server {
+                                                listen 80;
+                                                listen [::]:80;
+                                                client_max_body_size 50M;
+
+                                                server_name _;
+
+                                                # Serve React frontend
+                                                location / {
+                                                        root /usr/share/nginx/html;
+                                                        index index.html;
+                                                        try_files \$uri /index.html;
+                                                }
+
+                                                # Forward API requests to backend container
+                                                location /api/ {
+                                                        proxy_pass http://127.0.0.1:${API_PORT};
+                                                        proxy_set_header Host \$host;
+                                                        proxy_set_header X-Real-IP \$remote_addr;
+                                                        proxy_request_buffering off;
+                                                        proxy_read_timeout 300;
+                                                }
+
+                                                # Serve media uploads
+                                                location /media/ {
+                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
+                                                        autoindex off;
+                                                }
+                                        }
+                                        EOF
+
+                        - name: Download builds
                           uses: appleboy/ssh-action@v0.1.10
                           with:
                                   host: ${{ secrets.TARGET_HOST }}
@@ -72,28 +163,13 @@ jobs:
                                   proxy_username: ${{ secrets.GATEWAY_USER }}
                                   proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   script: |
+                                          echo "----------------------------------------------"
+                                          echo "Downloading docker images..."
+                                          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                                          docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+                                          docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
-                                          sudo mkdir -p "/var/www/${{ github.event.repository.name }}/build"
-                                          sudo chown -R "$USER:$USER" "/var/www/${{ github.event.repository.name }}"
-                                          sudo chown -R "$USER:$USER" "/srv/${{ github.event.repository.name }}"
-
-
-                        - name: Upload build to server
-                          uses: appleboy/scp-action@v0.1.7
-                          with:
-                                  host: ${{ secrets.TARGET_HOST }}
-                                  username: ${{ secrets.TARGET_USER }}
-                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  port: ${{ secrets.TARGET_PORT }}
-
-                                  proxy_host: ${{ secrets.GATEWAY_HOST }}
-                                  proxy_port: ${{ secrets.GATEWAY_PORT }}
-                                  proxy_username: ${{ secrets.GATEWAY_USER }}
-                                  proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  source: "build"
-                                  target: "/var/www/${{ github.event.repository.name }}"
-
-                        - name: Deploy frontend and backend to prod servers
+                        - name: Deploy
                           uses: appleboy/ssh-action@v0.1.10
                           with:
                                   host: ${{ secrets.TARGET_HOST }}
@@ -108,101 +184,46 @@ jobs:
                                   script: |
                                           echo "----------------------------------------------"
                                           echo "Exporting environment variables..."
-                                          export REPO_NAME="${{ github.event.repository.name }}"
-                                          export REPO_OWNER="${{ github.repository_owner }}"
-                                          export GITHUB_ACTOR="${{github.actor}}"
-                                          export ACCOUNT_TOKEN="${{ secrets.ACCOUNT_TOKEN }}"
-                                          export PROJECT_PATH="/srv/${REPO_NAME}"
 
-
+                                          export PROJECT_PATH=/srv/${{ github.event.repository.name }}
+                                          export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env"
+                                          export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env.production"
                                           export DB_USER="${{ secrets.DB_USER }}"
                                           export DB_PASS="${{ secrets.DB_PASS }}"
                                           export DB_NAME="${{ vars.DB_NAME }}"
                                           export DB_HOST="${{ vars.DB_HOST }}"
                                           export DB_PORT="${{ vars.DB_PORT }}"
                                           export API_PORT="${{ vars.API_PORT }}"
+                                          
+                                          # volumes will map uploads to the external media path
+                                          export EXTERNAL_STATIC_MEDIA_PATH="/var/www/${{ github.event.repository.name }}/uploads"
+                                          export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
+                                          : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
 
 
-                                          export STATIC_CONTENT_PATH="/var/www/${REPO_NAME}"
-                                          export STATIC_MEDIA_PATH="${STATIC_CONTENT_PATH}/uploads"
-
-
-                                          export DOWN_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
-                                          export FULL_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME}}"
-                                          export ORIGINAL_SCALE_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
-                                          export TEMP_IMAGE_FILE_PATH="${STATIC_MEDIA_PATH}/${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"
-
-
-                                          # export FRONTEND_BUILD_SRC="${PROJECT_PATH}/frontend/build"
-                                          export FRONTEND_BUILD_DST="/var/www/${REPO_NAME}/build"
-
-
-                                          export NGINX_CONFIG_SRC="${PROJECT_PATH}/infra/nginx/${REPO_NAME}"
-                                          export NGINX_CONFIG_DST="/etc/nginx/sites-available/${REPO_NAME}"
-                                          export NGINX_ENABLED_PATH="/etc/nginx/sites-enabled/${REPO_NAME}"
-
-
-                                          export REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}"
                                           export REACT_APP_FEATURE_FLAG="${{ vars.REACT_APP_FEATURE_FLAG }}"
-
-
-                                          export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env"
-                                          export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env"
-                                          echo "Environment variables exported."
-
+                                          export REACT_APP_MAX_FILES_PER_UPLOAD="${{ vars.REACT_APP_MAX_FILES_PER_UPLOAD }}"
+                                          echo "Environment variables exported.\n\n"
+                                          
 
 
                                           echo "----------------------------------------------"
-                                          echo "Staging repo..."
-                                          sudo mkdir -p "${PROJECT_PATH}"
-                                          sudo chown $USER:$USER "$PROJECT_PATH"
-
-                                          export BRANCH="${{ github.ref_name }}"
-
-                                          if [ ! -d "${PROJECT_PATH}/.git" ]; then
-                                            echo "Cloning repo..."
-                                            git clone --branch "$BRANCH" "https://${GITHUB_ACTOR}:${ACCOUNT_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git" "$PROJECT_PATH"
-                                          else
-                                            echo "Updating repo..."
-                                            cd "$PROJECT_PATH"
-                                            git fetch origin "$BRANCH"
-                                            git reset --hard "origin/$BRANCH"
-                                          fi
-
-                                          echo "----------------------------------------------"
-                                          echo "Staging system..."
-                                          cd "$PROJECT_PATH"
-                                          bash ./scripts/install-system-dependencies.sh
-                                          bash ./scripts/setup-postgres-account.sh
-
-
-                                          echo "Ensuring media directories exist..."
-                                          sudo mkdir -p $ORIGINAL_SCALE_IMAGE_FILE_PATH $DOWN_SCALE_IMAGE_FILE_PATH $FULL_SCALE_IMAGE_FILE_PATH $TEMP_IMAGE_FILE_PATH
-
-
-
-                                          echo "----------------------------------------------"
-                                          echo "Staging nginx..."
-                                          bash ./scripts/generate-nginx-config.sh
-
-
-
-                                          echo "----------------------------------------------"
+                                          echo "Generating .env files..."
                                           sudo mkdir -p "$(dirname "$BACKEND_ENV_PATH")"
                                           sudo touch "$BACKEND_ENV_PATH"
+                                          sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
+                                          sudo touch "$FRONTEND_ENV_PATH"
 
 
-                                          echo "Updating backend .env..."
                                           sudo cat > ${BACKEND_ENV_PATH} <<EOF
+                                          API_PORT=$API_PORT
                                           DB_USER=$DB_USER
                                           DB_PASS=$DB_PASS
                                           DB_NAME=$DB_NAME
                                           DB_HOST=$DB_HOST
                                           DB_PORT=$DB_PORT
-                                          API_PORT=$API_PORT
-
                                           PUBLIC_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}
-                                          BASE_MEDIA_PATH=$STATIC_MEDIA_PATH
+                                          BASE_MEDIA_PATH=$INTERNAL_STATIC_MEDIA_PATH
                                           DOWN_SCALE_IMAGE_FOLDER_NAME="${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
                                           FULL_SCALE_IMAGE_FOLDER_NAME="${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME }}"
                                           ORIGINAL_SCALE_IMAGE_FOLDER_NAME="${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
@@ -210,22 +231,20 @@ jobs:
                                           EOF
 
 
-
-                                          echo "----------------------------------------------"
-                                          echo "Updating frontend .env..."
-                                          sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
-                                          sudo touch "$FRONTEND_ENV_PATH"
                                           sudo cat > ${FRONTEND_ENV_PATH} <<EOF
                                           REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
+                                          REACT_APP_MAX_FILES_PER_UPLOAD=$REACT_APP_MAX_FILES_PER_UPLOAD
                                           EOF
-
+                                          echo "Generated .env files...\n\n"
 
 
                                           echo "----------------------------------------------"
-                                          echo "Deploying frontend application..."
-                                          bash ./scripts/deploy-frontend.sh
+                                          echo "Deploying Docker Containers..."
+                                          docker compose up -d
 
-
-                                          echo "Deploying backend application..."
-                                          bash ./scripts/deploy-backend.sh
+                                          echo "Running migrations..."
+                                          docker compose run --rm backend npm run migrate:up
+                                          docker compose run backend npm run migrate:up
+                                          echo "Containers deployed...\n\n"
+                                          echo "----------------------------------------------"
