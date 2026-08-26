@@ -1,0 +1,41 @@
+services:
+  nginx:
+    image: ghcr.io/${REPO_OWNER}/${REPO_NAME}/frontend:${GITHUB_SHA}
+    ports:
+      - "80:80"
+    env_file:
+      - ./frontend/.env.production
+    volumes:
+      - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
+    hostname: nginx
+
+  # change db code to contact postgres CONTAINER, not localhost!
+  # db:5432
+  # postgres://DB_USER:DB_PASS@db:5432/DB_NAME
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    hostname: db
+
+  backend:
+    image: ghcr.io/${REPO_OWNER}/${REPO_NAME}/backend:${GITHUB_SHA}
+    # command: tail -f 
+    ports:
+      - "${API_PORT}:5000"
+    env_file:
+      - ./backend/.env.production
+
+    volumes:
+      - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
+    
+    hostname: backend
+  
+volumes:
+  postgres_data:
