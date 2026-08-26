@@ -19,11 +19,7 @@ jobs:
 
                         - name: Install lint
                           run: |
-                                cd frontend
-                                npm install --save-dev eslint @eslint/js eslint-plugin-react globals
-                                cd ../backend
-                                npm install --save-dev eslint @eslint/js globals
-                                cd ..
+                                npm ci
 
 
                         - name: Lint project
