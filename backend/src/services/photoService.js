@@ -135,7 +135,14 @@ exports.statusCheck = async () => {
         const fullPath = path.join(config.media.basePath, config.media.fullScaleFolder);
         const downPath = path.join(config.media.basePath, config.media.downScaleFolder);
 
-        for (const dir of [tmpPath, origPath, fullPath, downPath]) {
-                if (!fssync.existsSync(dir)) throw new Error("Server cannot start. Media folders do not exist!");
+        const paths = [tmpPath, origPath, fullPath, downPath];
+        console.log(paths);
+
+        for (const dir of paths) {
+                console.error(`Checking ${dir}`);
+                if (!fssync.existsSync(dir)) {
+                        console.error(`Server cannot start. ${dir} do not exist!`);
+                        throw new Error(`Server cannot start. ${dir} do not exist!`);
+                }
         }
 };
