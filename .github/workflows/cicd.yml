@@ -17,6 +17,15 @@ jobs:
                         - name: Checkout repo
                           uses: actions/checkout@v4
 
+                        - name: Install lint
+                          run: |
+                                cd frontend
+                                npm install --save-dev eslint eslint-plugin-react eslint-plugin-jsx-a11y eslint-plugin-import
+                                cd ../backend
+                                npm install --save-dev eslint
+                                cd ..
+
+
                         - name: Lint project
                           run: npm run lint
 
