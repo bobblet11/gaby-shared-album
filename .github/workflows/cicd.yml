@@ -162,18 +162,24 @@ jobs:
                                         echo "Generated nginx config."  
                                         echo "----------------------------------------------" 
 
-                                        echo "Installing Docker..."  
+                                        echo "Installing Docker..."
 
                                         if ! command -v docker >/dev/null 2>&1; then
                                                 echo "Docker not found, installing..."
                                                 sudo apt-get update -y
-                                                sudo apt-get install -y docker.io
-                                                sudo systemctl start docker
-                                                sudo systemctl enable docker
+                                                sudo apt-get install -y docker.io docker-compose-v2
+                                                sudo systemctl enable --now docker
                                         else
                                                 echo "Docker already installed: $(docker --version)"
                                         fi
 
+                                        if ! sudo docker compose version >/dev/null 2>&1; then
+                                                echo "Docker Compose not found, installing..."
+                                                sudo apt-get update -y
+                                                sudo apt-get install -y docker-compose-plugin docker-compose-v2
+                                        fi
+
+                                        sudo docker compose version
                                         echo "Docker installed."  
                                         echo "----------------------------------------------" 
 
@@ -190,6 +196,7 @@ jobs:
                                   proxy_username: ${{ secrets.GATEWAY_USER }}
                                   proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   script: |
+                                         set -euo pipefail
                                           echo "----------------------------------------------"
                                           echo "Downloading docker images..."
                                           echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -209,6 +216,7 @@ jobs:
                                   proxy_username: ${{ secrets.GATEWAY_USER }}
                                   proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
                                   script: |
+                                          set -euo pipefail
                                           echo "----------------------------------------------"
                                           echo "Exporting environment variables..."
 
