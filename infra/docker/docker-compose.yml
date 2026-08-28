@@ -1,6 +1,7 @@
 services:
   nginx:
     image: ghcr.io/${REPO_OWNER}/${REPO_NAME}/frontend:${GITHUB_SHA}
+    container_name: nginx
     ports:
       - "80:80"
     env_file:
@@ -14,6 +15,7 @@ services:
   # postgres://DB_USER:DB_PASS@db:5432/DB_NAME
   db:
     image: postgres:15
+    container_name: db
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -25,6 +27,7 @@ services:
     hostname: db
 
   backend:
+    container_name: backend
     image: ghcr.io/${REPO_OWNER}/${REPO_NAME}/backend:${GITHUB_SHA}
     # command: tail -f 
     ports:
