@@ -13,7 +13,8 @@ export default function UploadForm({ title, caption, handleSubmit, onSelectedFil
                         <form className="upload-form" style={style} onSubmit={handleSubmit}>
                                 {isUploading && (
                                         <div
-						style={{
+                                                style={{
+
 							position: "absolute",
 							inset: 0,
 							display: "flex",
