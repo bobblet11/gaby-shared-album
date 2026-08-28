@@ -213,7 +213,7 @@ jobs:
                                           echo "Exporting environment variables..."
 
                                           export PROJECT_PATH=/srv/${{ github.event.repository.name }}
-                                          export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env"
+                                          export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env.production"
                                           export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env.production"
                                           export DB_USER="${{ secrets.DB_USER }}"
                                           export DB_PASS="${{ secrets.DB_PASS }}"
