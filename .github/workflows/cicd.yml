@@ -60,7 +60,8 @@ jobs:
                 environment: prod
                 needs: lint-ci-build-upload
                 steps:
-                        - name: Ensure all folders & files exist
+
+                        - name: Ensure all folders & files & dependencies exist
                           uses: appleboy/ssh-action@v0.1.10
                           with:
                                 host: ${{ secrets.TARGET_HOST }}
@@ -154,6 +155,23 @@ jobs:
                                                 }
                                         }
                                         EOF
+                                        echo "Generated nginx config."  
+                                        echo "----------------------------------------------" 
+
+                                        echo "Installing Docker..."  
+                                        
+                                        if ! command -v docker >/dev/null 2>&1; then
+                                                echo "Docker not found, installing..."
+                                                sudo apt-get update -y
+                                                sudo apt-get install -y docker.io
+                                                sudo systemctl start docker
+                                                sudo systemctl enable docker
+                                        else
+                                                echo "Docker already installed: $(docker --version)"
+                                        fi
+
+                                        echo "Docker installed."  
+                                        echo "----------------------------------------------" 
 
                         - name: Download builds
                           uses: appleboy/ssh-action@v0.1.10
