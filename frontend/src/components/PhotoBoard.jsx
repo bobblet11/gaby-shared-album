@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import Photo from "./Photo";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import PropTypes from "prop-types";

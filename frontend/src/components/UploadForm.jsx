@@ -10,7 +10,7 @@ export default function UploadForm({ title, caption, handleSubmit, onSelectedFil
                                 <h1>Upload a Polaroid</h1>
                         </div>
 
-                        <form className="upload-form" onSubmit={handleSubmit}>
+                        <form className="upload-form" style={style} onSubmit={handleSubmit}>
                                 {isUploading && (
                                         <div
 						style={{

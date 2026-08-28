@@ -11,7 +11,7 @@ export default function EditForm({ variant = "default", style, isUploading, open
                                         ×
                                 </button>
                         </div>
-                        <form className="edit-form" onSubmit={handleEditSubmit}>
+                        <form className="edit-form" style={style} onSubmit={handleEditSubmit}>
                                 {isUploading && (
                                         <div
                                                 style={{
