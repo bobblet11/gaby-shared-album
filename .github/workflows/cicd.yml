@@ -159,7 +159,7 @@ jobs:
                                         echo "----------------------------------------------" 
 
                                         echo "Installing Docker..."  
-                                        
+
                                         if ! command -v docker >/dev/null 2>&1; then
                                                 echo "Docker not found, installing..."
                                                 sudo apt-get update -y
@@ -189,8 +189,8 @@ jobs:
                                           echo "----------------------------------------------"
                                           echo "Downloading docker images..."
                                           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-                                          docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-                                          docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+                                          sudo docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+                                          sudo docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
                         - name: Deploy
                           uses: appleboy/ssh-action@v0.1.10
@@ -264,10 +264,10 @@ jobs:
 
                                           echo "----------------------------------------------"
                                           echo "Deploying Docker Containers..."
-                                          docker compose up -d
+                                          sudo docker compose up -d
 
                                           echo "Running migrations..."
-                                          docker compose run --rm backend npm run migrate:up
-                                          docker compose run backend npm run migrate:up
+                                          sudo docker compose run --rm backend npm run migrate:up
+                                          sudo docker compose run backend npm run migrate:up
                                           echo "Containers deployed...\n\n"
                                           echo "----------------------------------------------"
