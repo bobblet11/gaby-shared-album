@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 export default function ModalOverlay({ variant = "default", style, onClick, children }) {
         return (
-                <div className={`modal-backdrop ${variant}`} onClick={onClick}>
+                <div style={style} className={`modal-backdrop ${variant}`} onClick={onClick}>
                         {children}
                 </div>
         );
