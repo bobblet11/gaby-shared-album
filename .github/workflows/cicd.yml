@@ -19,8 +19,7 @@ jobs:
 
                         - name: Install lint
                           run: |
-                                npm ci
-
+                                npm install --only=dev
 
                         - name: Lint project
                           run: npm run lint
