@@ -51,7 +51,7 @@ jobs:
 
                                                 # Forward API requests
                                                 location /api/ {
-                                                        proxy_pass http://${DB_HOST}:${API_PORT};
+                                                        proxy_pass http://backend:${API_PORT};
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
                                                         proxy_request_buffering off;
