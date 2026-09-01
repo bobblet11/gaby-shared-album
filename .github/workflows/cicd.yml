@@ -333,6 +333,7 @@ jobs:
 
                                           echo "----------------------------------------------"
                                           echo "Deploying Docker Containers..."
+                                          echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
                                           sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" --env-file "${DOCKER_ENV_PATH}" up -d
 
                                           echo "Running migrations..."
