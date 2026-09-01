@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: ghcr.io/${REPO_NAME}/frontend:${GITHUB_SHA}
+    image: ghcr.io/${GITHUB_REPO}/frontend:${GITHUB_SHA}
 
     container_name: nginx
     ports:
@@ -29,7 +29,7 @@ services:
 
   backend:
     container_name: backend
-    image: ghcr.io/${REPO_NAME}/backend:${GITHUB_SHA}
+    image: ghcr.io/${GITHUB_REPO}/backend:${GITHUB_SHA}
     # command: tail -f 
     ports:
       - "${API_PORT}:5000"
