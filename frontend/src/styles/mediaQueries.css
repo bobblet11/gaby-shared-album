@@ -1,0 +1,114 @@
+@media (max-width: 1200px) {
+        .photo-modal-image-container {
+                width: clamp(380px, 70vw, 950px);
+                max-height: 88vh;
+        }
+}
+
+@media (max-width: 768px) {
+        .photo-modal-buttons {
+                justify-content: center;
+                gap: 1.5rem;
+        }
+
+        .photo-modal-image-container {
+                width: clamp(320px, 86vw, 720px);
+                max-height: 88vh;
+        }
+
+        .photo-board {
+                gap: 20px;
+                padding: 30px 15px;
+        }
+
+        .photo-card {
+                width: clamp(260px, 55vw, 380px);
+                flex-basis: calc(clamp(260px, 55vw, 380px) - 20px);
+        }
+}
+
+@media (max-width: 480px) {
+        .photo-modal-buttons {
+                bottom: 5vh;
+                top: auto;
+                justify-content: space-around;
+                width: 100vw;
+                left: 0;
+        }
+
+        .upload-preview-slider {
+                gap: 8px;
+                padding: 0 12px;
+        }
+
+        .photo-modal-image-container {
+                width: clamp(280px, 94vw, 520px);
+                max-height: 88vh;
+        }
+
+        .upload-dropzone {
+                padding: 30px 15px;
+        }
+
+        .file-upload-button {
+                width: 100%;
+                text-align: center;
+                font-size: 1rem;
+                padding: 14px;
+        }
+
+        .upload-preview {
+                max-height: 140px;
+                border-radius: 6px;
+        }
+
+        .photo-modal-edit,
+        .photo-modal-delete,
+        .photo-modal-download {
+                top: 8px;
+                right: 8px;
+                padding: 12px 20px;
+                font-size: 1.1rem;
+                border-radius: 8px;
+        }
+
+        .photo-board {
+                gap: 15px;
+                padding: 25px 12px;
+        }
+
+        .photo-card {
+                width: clamp(240px, 70vw, 360px);
+                flex-basis: calc(clamp(240px, 70vw, 360px) - 15px);
+        }
+
+        .top-banner {
+                padding: 0 15px;
+                height: 60px;
+        }
+
+        .title-card {
+                font-size: 1.1rem;
+        }
+
+        .photo-caption {
+                font-size: clamp(0.9rem, 1.5vw, 1rem);
+        }
+
+        .photo-title {
+                font-size: clamp(1rem, 1.8vw, 1.1rem);
+        }
+}
+
+@media (max-width: 360px) {
+        .photo-board {
+                gap: 12px;
+                padding: 20px 10px;
+        }
+
+        .photo-card {
+                width: clamp(220px, 85vw, 340px);
+                flex-basis: calc(clamp(220px, 85vw, 340px) - 12px);
+        }
+}
+
