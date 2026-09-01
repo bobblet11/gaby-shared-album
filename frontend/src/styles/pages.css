@@ -1,11 +1,14 @@
 /* pages.css */
 
 .page {
-        min-height: 100vh;
         display: flex;
         flex-direction: column;
-        width: 100%;
+        flex: 1;
         overflow-x: hidden;
+}
+
+.home-page {
+
 }
 
 .upload-page {

@@ -1,18 +1,18 @@
 /* photoBoard.css */
 
 .photo-board {
-        position: relative;
-        width: 100%;
-        max-width: 100vw;
-        min-height: 100%;
-        overflow: visible;
+        flex: 1; /* take all remaining space */
+        width: 100%; /* full width of parent */
+        height: auto; /* let flexbox control height */
         background: #f5f0e8;
+
         display: flex;
-        gap: 30px;
         flex-wrap: wrap;
         justify-content: center;
         align-items: flex-start;
+        gap: 30px;
         padding: 40px 20px;
+        overflow-y: auto; /* scroll if content exceeds */
 }
 
 /* Card wrapper - maintains grid structure */
@@ -98,8 +98,11 @@
         color: #444;
 }
 
+.upload-main,
 .home-main {
+        flex-direction: column; 
         position: relative;
+        display: flex;
         width: 100%;
         min-height: calc(100vh - 72px);
         overflow-x: hidden;
@@ -233,4 +236,32 @@
         font-size: 28px;
         line-height: 1;
         cursor: pointer;
+}
+
+.nothing-to-see-here {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        margin: auto;
+        padding: 40px 20px;
+        max-width: 400px;
+
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: #e776a1;
+
+        background: #fff9fbef;
+        border: 2px dashed #f8a7c6;
+        border-radius: 8px;
+
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+        animation: fadeIn 0.6s ease-in-out;
+
+        transition:
+                background 0.15s,
+                border-color 0.15s;
 }
