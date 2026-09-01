@@ -21,6 +21,46 @@ jobs:
                         - name: Checkout repo
                           uses: actions/checkout@v4
 
+                        - name: Create nginx config
+                          run: |
+                                        export API_PORT="${{ vars.API_PORT }}"
+                                        export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
+                                        : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
+
+                                        sudo cat > ./infra/nginx/frontend.conf <<EOF
+                                        server {
+                                                listen 80;
+                                                listen [::]:80;
+                                                client_max_body_size 50M;
+
+                                                server_name _;
+
+                                                # Serve media uploads FIRST
+                                                location /media/ {
+                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
+                                                        autoindex off;
+                                                }
+
+                                                # Serve React frontend
+                                                location / {
+                                                        root /usr/share/nginx/html;
+                                                        index index.html;
+                                                        try_files \$uri /index.html;
+                                                }
+
+                                                # Forward API requests
+                                                location /api/ {
+                                                        proxy_pass http://127.0.0.1:${API_PORT};
+                                                        proxy_set_header Host \$host;
+                                                        proxy_set_header X-Real-IP \$remote_addr;
+                                                        proxy_request_buffering off;
+                                                        proxy_read_timeout 300;
+                                                }
+
+
+                                        }
+                                        EOF
+
                         - name: Install lint
                           run: |
                                 npm install --only=dev
@@ -164,6 +204,7 @@ jobs:
 
                                         }
                                         EOF
+
                                         echo "Generated nginx config."  
                                         echo "----------------------------------------------" 
 
