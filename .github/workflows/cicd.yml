@@ -139,6 +139,12 @@ jobs:
 
                                                 server_name _;
 
+                                                # Serve media uploads FIRST
+                                                location /media/ {
+                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
+                                                        autoindex off;
+                                                }
+
                                                 # Serve React frontend
                                                 location / {
                                                         root /usr/share/nginx/html;
@@ -146,7 +152,7 @@ jobs:
                                                         try_files \$uri /index.html;
                                                 }
 
-                                                # Forward API requests to backend container
+                                                # Forward API requests
                                                 location /api/ {
                                                         proxy_pass http://127.0.0.1:${API_PORT};
                                                         proxy_set_header Host \$host;
@@ -155,11 +161,7 @@ jobs:
                                                         proxy_read_timeout 300;
                                                 }
 
-                                                # Serve media uploads
-                                                location /media/ {
-                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
-                                                        autoindex off;
-                                                }
+
                                         }
                                         EOF
                                         echo "Generated nginx config."  
