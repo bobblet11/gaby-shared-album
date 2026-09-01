@@ -211,7 +211,7 @@ jobs:
                                           sudo docker rmi -f $(sudo docker images -q) || true
 
                                           # Prune unused volumes and networks
-                                          docker system prune -af --volumes
+                                          sudo docker system prune -af --volumes
                                           echo "Deleted old builds..."
 
                         - name: Download new builds
