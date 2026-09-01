@@ -187,25 +187,27 @@ jobs:
                                         echo "Docker installed."  
                                         echo "----------------------------------------------" 
 
-                        - name: Download builds
-                          uses: appleboy/ssh-action@v0.1.10
-                          with:
-                                  host: ${{ secrets.TARGET_HOST }}
-                                  username: ${{ secrets.TARGET_USER }}
-                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  port: ${{ secrets.TARGET_PORT }}
+                        # - name: Download builds
+                        #   uses: appleboy/ssh-action@v0.1.10
+                        #   with:
+                        #           host: ${{ secrets.TARGET_HOST }}
+                        #           username: ${{ secrets.TARGET_USER }}
+                        #           key: ${{ secrets.SSH_PRIVATE_KEY }}
+                        #           port: ${{ secrets.TARGET_PORT }}
 
-                                  proxy_host: ${{ secrets.GATEWAY_HOST }}
-                                  proxy_port: ${{ secrets.GATEWAY_PORT }}
-                                  proxy_username: ${{ secrets.GATEWAY_USER }}
-                                  proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
-                                  script: |
-                                         set -euo pipefail
-                                          echo "----------------------------------------------"
-                                          echo "Downloading docker images..."
-                                          echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
-                                          sudo docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-                                          sudo docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+                        #           proxy_host: ${{ secrets.GATEWAY_HOST }}
+                        #           proxy_port: ${{ secrets.GATEWAY_PORT }}
+                        #           proxy_username: ${{ secrets.GATEWAY_USER }}
+                        #           proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                        #           script: |
+                        #                   set -euo pipefail
+                        #                   echo "----------------------------------------------"
+
+                                          
+                        #                   echo "Downloading docker images..."
+                        #                   echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                        #                   sudo docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+                        #                   sudo docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
                         - name: Deploy
                           uses: appleboy/ssh-action@v0.1.10
@@ -223,6 +225,7 @@ jobs:
                                           set -euo pipefail
                                           echo "----------------------------------------------"
                                           echo "Exporting environment variables..."
+                                          
                                           export REPO_NAME="${{ github.repository }}"
                                           export GITHUB_SHA="${{ github.sha }}"
 
@@ -263,7 +266,7 @@ jobs:
                                           sudo chown "$USER:$USER" "${BACKEND_ENV_PATH}"
                                           sudo chown "$USER:$USER" "${FRONTEND_ENV_PATH}"
                                           sudo chown "$USER:$USER" "${DOCKER_ENV_PATH}"
-
+                                          
 
                                           sudo cat > ${BACKEND_ENV_PATH} <<EOF
                                           API_PORT=$API_PORT
