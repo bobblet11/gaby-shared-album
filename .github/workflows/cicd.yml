@@ -214,7 +214,7 @@ jobs:
                                           docker system prune -af --volumes
                                           echo "Deleted old builds..."
 
-                        - name: Download builds
+                        - name: Download new builds
                           uses: appleboy/ssh-action@v0.1.10
                           with:
                                   host: ${{ secrets.TARGET_HOST }}
@@ -252,7 +252,7 @@ jobs:
                                           set -euo pipefail
                                           echo "----------------------------------------------"
                                           echo "Exporting environment variables..."
-
+                                          
                                           export PROJECT_PATH=/srv/${{ github.event.repository.name }}
                                           export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env.production"
                                           export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env.production"
