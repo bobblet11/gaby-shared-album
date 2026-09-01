@@ -229,6 +229,7 @@ jobs:
                                           export PROJECT_PATH=/srv/${{ github.event.repository.name }}
                                           export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env.production"
                                           export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env.production"
+                                          export DOCKER_ENV_PATH="${PROJECT_PATH}/infra/docker/.env"
                                           export DB_USER="${{ secrets.DB_USER }}"
                                           export DB_PASS="${{ secrets.DB_PASS }}"
                                           export DB_NAME="${{ vars.DB_NAME }}"
@@ -252,8 +253,12 @@ jobs:
                                           echo "Generating .env files..."
                                           sudo mkdir -p "$(dirname "$BACKEND_ENV_PATH")"
                                           sudo touch "$BACKEND_ENV_PATH"
+
                                           sudo mkdir -p "$(dirname "$FRONTEND_ENV_PATH")"
                                           sudo touch "$FRONTEND_ENV_PATH"
+
+                                          sudo mkdir -p "$(dirname "$DOCKER_ENV_PATH")"
+                                          sudo touch "$DOCKER_ENV_PATH"
 
 
                                           sudo cat > ${BACKEND_ENV_PATH} <<EOF
@@ -277,15 +282,31 @@ jobs:
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
                                           REACT_APP_MAX_FILES_PER_UPLOAD=$REACT_APP_MAX_FILES_PER_UPLOAD
                                           EOF
+
+                                          sudo cat > ${DOCKER_ENV_PATH} <<EOF
+                                          PROJECT_PATH=${PROJECT_PATH}
+                                          REPO_NAME=${REPO_NAME}
+                                          GITHUB_SHA=${GITHUB_SHA}
+                                          API_PORT=${API_PORT}
+                                          EXTERNAL_STATIC_MEDIA_PATH=${EXTERNAL_STATIC_MEDIA_PATH}
+                                          INTERNAL_STATIC_MEDIA_PATH=${INTERNAL_STATIC_MEDIA_PATH}
+                                          DB_USER=${DB_USER}
+                                          DB_PASS=${DB_PASS}
+                                          DB_NAME=${DB_NAME}
+                                          DB_HOST=${DB_HOST}
+                                          DB_PORT=${DB_PORT}
+                                          EOF
+
                                           echo "Generated .env files...\n\n"
 
 
                                           echo "----------------------------------------------"
                                           echo "Deploying Docker Containers..."
                                           sudo -E docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" up -d
+                                          sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" --env-file "${DOCKER_ENV_PATH}" up -d
 
                                           echo "Running migrations..."
-                                          sudo docker compose exec backend npm run migrate:up
+                                          sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" exec backend npm run migrate:up
 
                                           echo "Containers deployed...\n\n"
                                           echo "----------------------------------------------"
