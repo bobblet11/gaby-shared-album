@@ -1,11 +1,12 @@
 services:
   nginx:
-    image: ghcr.io/${REPO_OWNER}/${REPO_NAME}/frontend:${GITHUB_SHA}
+    image: ghcr.io/${REPO_NAME}/frontend:${GITHUB_SHA}
+
     container_name: nginx
     ports:
       - "80:80"
     env_file:
-      - ./frontend/.env.production
+      - ${PROJECT_PATH}/frontend/.env.production
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
     hostname: nginx
@@ -28,12 +29,12 @@ services:
 
   backend:
     container_name: backend
-    image: ghcr.io/${REPO_OWNER}/${REPO_NAME}/backend:${GITHUB_SHA}
+    image: ghcr.io/${REPO_NAME}/backend:${GITHUB_SHA}
     # command: tail -f 
     ports:
       - "${API_PORT}:5000"
     env_file:
-      - ./backend/.env.production
+      - ${PROJECT_PATH}/backend/.env.production
 
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
