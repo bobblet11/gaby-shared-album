@@ -7,6 +7,7 @@ import { usePhotoDetail } from "../hooks/usePhotoDetail";
 import Spinner from "./Spinner";
 import EditForm from "./EditForm";
 import ModalOverlay from "./ModalOverlay";
+import NothingToSeeHere from "./NothingToSeeHere";
 
 export default function PhotoBoard({ photos = [], variant = "default" }) {
         const { openPhoto, editDraft, isEditingPhoto, isDirty, onOpenPhoto, onClosePhoto, onEnterEdit, onExitEdit, updateTitle, updateCaption } = usePhotoDetail();
@@ -22,9 +23,7 @@ export default function PhotoBoard({ photos = [], variant = "default" }) {
                                 >
                                         {(isDeleting || isDownloading) && (
                                                 <ModalOverlay variant={variant}>
-                                                        <Spinner
-                                                                variant={variant}
-                                                        />
+                                                        <Spinner variant={variant} />
                                                 </ModalOverlay>
                                         )}
 
@@ -70,9 +69,8 @@ export default function PhotoBoard({ photos = [], variant = "default" }) {
                         )}
 
                         <div className={`photo-board ${variant}`}>
-                                {photos.map((photo) => (
-                                        <Photo key={photo.id} {...photo} onOpenPhoto={onOpenPhoto} />
-                                ))}
+                                {photos.length > 0 && photos.map((photo) => <Photo key={photo.id} {...photo} onOpenPhoto={onOpenPhoto} />)}
+                                {photos.length === 0 && <NothingToSeeHere variant={variant} style={{}} />}
                         </div>
                 </>
         );
