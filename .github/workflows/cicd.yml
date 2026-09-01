@@ -187,6 +187,33 @@ jobs:
                                         echo "Docker installed."  
                                         echo "----------------------------------------------" 
 
+                        
+                        - name: Delete old builds
+                          uses: appleboy/ssh-action@v0.1.10
+                          with:
+                                  host: ${{ secrets.TARGET_HOST }}
+                                  username: ${{ secrets.TARGET_USER }}
+                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  port: ${{ secrets.TARGET_PORT }}
+
+                                  proxy_host: ${{ secrets.GATEWAY_HOST }}
+                                  proxy_port: ${{ secrets.GATEWAY_PORT }}
+                                  proxy_username: ${{ secrets.GATEWAY_USER }}
+                                  proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  script: |
+                                          set -euo pipefail
+                                          echo "----------------------------------------------"
+                                          echo "Deleting old builds..."
+                                          # Remove all containers
+                                          sudo docker rm -f $(sudo docker ps -aq) || true
+
+                                          # Remove all images
+                                          sudo docker rmi -f $(sudo docker images -q) || true
+
+                                          # Prune unused volumes and networks
+                                          docker system prune -af --volumes
+                                          echo "Deleted old builds..."
+
                         # - name: Download builds
                         #   uses: appleboy/ssh-action@v0.1.10
                         #   with:
