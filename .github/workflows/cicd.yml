@@ -214,27 +214,27 @@ jobs:
                                           docker system prune -af --volumes
                                           echo "Deleted old builds..."
 
-                        # - name: Download builds
-                        #   uses: appleboy/ssh-action@v0.1.10
-                        #   with:
-                        #           host: ${{ secrets.TARGET_HOST }}
-                        #           username: ${{ secrets.TARGET_USER }}
-                        #           key: ${{ secrets.SSH_PRIVATE_KEY }}
-                        #           port: ${{ secrets.TARGET_PORT }}
+                        - name: Download builds
+                          uses: appleboy/ssh-action@v0.1.10
+                          with:
+                                  host: ${{ secrets.TARGET_HOST }}
+                                  username: ${{ secrets.TARGET_USER }}
+                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  port: ${{ secrets.TARGET_PORT }}
 
-                        #           proxy_host: ${{ secrets.GATEWAY_HOST }}
-                        #           proxy_port: ${{ secrets.GATEWAY_PORT }}
-                        #           proxy_username: ${{ secrets.GATEWAY_USER }}
-                        #           proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
-                        #           script: |
-                        #                   set -euo pipefail
-                        #                   echo "----------------------------------------------"
+                                  proxy_host: ${{ secrets.GATEWAY_HOST }}
+                                  proxy_port: ${{ secrets.GATEWAY_PORT }}
+                                  proxy_username: ${{ secrets.GATEWAY_USER }}
+                                  proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  script: |
+                                          set -euo pipefail
+                                          echo "----------------------------------------------"
 
                                           
-                        #                   echo "Downloading docker images..."
-                        #                   echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
-                        #                   sudo docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-                        #                   sudo docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+                                          echo "Downloading docker images..."
+                                          echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                                          sudo docker pull ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+                                          sudo docker pull ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
                         - name: Deploy
                           uses: appleboy/ssh-action@v0.1.10
@@ -252,9 +252,6 @@ jobs:
                                           set -euo pipefail
                                           echo "----------------------------------------------"
                                           echo "Exporting environment variables..."
-                                          
-                                          export REPO_NAME="${{ github.repository }}"
-                                          export GITHUB_SHA="${{ github.sha }}"
 
                                           export PROJECT_PATH=/srv/${{ github.event.repository.name }}
                                           export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env.production"
@@ -319,8 +316,8 @@ jobs:
 
                                           sudo cat > ${DOCKER_ENV_PATH} <<EOF
                                           PROJECT_PATH=${PROJECT_PATH}
-                                          REPO_NAME=${REPO_NAME}
-                                          GITHUB_SHA=${GITHUB_SHA}
+                                          GITHUB_REPO=${{ github.repository }}
+                                          GITHUB_SHA=${{ github.sha }}
                                           API_PORT=${API_PORT}
                                           EXTERNAL_STATIC_MEDIA_PATH=${EXTERNAL_STATIC_MEDIA_PATH}
                                           INTERNAL_STATIC_MEDIA_PATH=${INTERNAL_STATIC_MEDIA_PATH}
