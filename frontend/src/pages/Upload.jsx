@@ -22,9 +22,10 @@ export default function UploadPage({ variant = "default" }) {
         return (
                 <div className="page upload-page">
                         {/* <PageBanner title="Gaby&apos;s Corkboard" nextPageName="Home" goToNextPage={goToHomePage} variant="anniversary"/> */}
-                        <PageBanner title="Gaby&apos;s Photo App" nextPageName="Home" goToNextPage={goToHomePage} variant={variant} />
-
-                        <UploadForm variant={variant} handleSubmit={handleSubmit} isUploading={isUploading} isMultipleFilesSelected={isMultipleFilesSelected} dragOver={dragOver} onFileDrop={onFileDrop} onFileDragOver={onFileDragOver} onFileDragLeave={onFileDragLeave} onSelectedFilesChange={onSelectedFilesChange} previewUrls={previewUrls} updateTitle={updateTitle} updateCaption={updateCaption} title={title} caption={caption} />
+                        <PageBanner title="Gaby's Photo App" nextPageName="Home" goToNextPage={goToHomePage} variant={variant} />
+                        <main className="upload-main">
+                                <UploadForm variant={variant} handleSubmit={handleSubmit} isUploading={isUploading} isMultipleFilesSelected={isMultipleFilesSelected} dragOver={dragOver} onFileDrop={onFileDrop} onFileDragOver={onFileDragOver} onFileDragLeave={onFileDragLeave} onSelectedFilesChange={onSelectedFilesChange} previewUrls={previewUrls} updateTitle={updateTitle} updateCaption={updateCaption} title={title} caption={caption} />
+                        </main>
                 </div>
         );
 }
