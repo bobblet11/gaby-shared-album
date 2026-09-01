@@ -23,6 +23,7 @@ jobs:
 
                         - name: Create nginx config
                           run: |
+                                        export DB_HOST="${{vars.DB_HOST}}"
                                         export API_PORT="${{ vars.API_PORT }}"
                                         export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
                                         : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
@@ -50,7 +51,7 @@ jobs:
 
                                                 # Forward API requests
                                                 location /api/ {
-                                                        proxy_pass http://127.0.0.1:${API_PORT};
+                                                        proxy_pass http://${DB_HOST}:${API_PORT};
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
                                                         proxy_request_buffering off;
@@ -165,49 +166,6 @@ jobs:
                                         fi
 
                                         echo "----------------------------------------------" 
-                                        export PUBLIC_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}
-                                        export API_PORT="${{ vars.API_PORT }}"
-                                        export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
-                                        : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
-
-                                        echo "Generating nginx config..."  
-                                        sudo cat > ${PROJECT_PATH}/infra/nginx/frontend.conf <<EOF
-                                        server {
-                                                listen 80;
-                                                listen [::]:80;
-                                                client_max_body_size 50M;
-
-                                                server_name _;
-
-                                                # Serve media uploads FIRST
-                                                location /media/ {
-                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
-                                                        autoindex off;
-                                                }
-
-                                                # Serve React frontend
-                                                location / {
-                                                        root /usr/share/nginx/html;
-                                                        index index.html;
-                                                        try_files \$uri /index.html;
-                                                }
-
-                                                # Forward API requests
-                                                location /api/ {
-                                                        proxy_pass http://127.0.0.1:${API_PORT};
-                                                        proxy_set_header Host \$host;
-                                                        proxy_set_header X-Real-IP \$remote_addr;
-                                                        proxy_request_buffering off;
-                                                        proxy_read_timeout 300;
-                                                }
-
-
-                                        }
-                                        EOF
-
-                                        echo "Generated nginx config."  
-                                        echo "----------------------------------------------" 
-
                                         echo "Installing Docker..."
 
                                         if ! command -v docker >/dev/null 2>&1; then
