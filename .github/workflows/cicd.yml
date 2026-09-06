@@ -6,9 +6,7 @@ on:
         push:
                 branches:
                         - main
-                        - refactor
-                        - dockerize
-                        
+                        - CICD-runs                        
 permissions:
         contents: read
         packages: write
@@ -276,7 +274,7 @@ jobs:
                                           export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env.production"
                                           export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env.production"
                                           export DOCKER_ENV_PATH="${PROJECT_PATH}/infra/docker/.env"
-                                          
+
                                           export DB_USER="${{ secrets.DB_USER }}"
                                           export DB_PASS="${{ secrets.DB_PASS }}"
                                           export DB_NAME="${{ vars.DB_NAME }}"
