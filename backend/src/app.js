@@ -2,7 +2,7 @@ const express = require("express");
 
 const bodyParser = require("body-parser");
 const logToWinston = require("./middlewares/logToWinston");
-const logger = require("./configs/winston")
+const logger = require("./configs/logger")
 const errorHandler = require("./middlewares/errorHandler");
 const config  = require("./configs/config");
 const photoService = require("./services/photoService");

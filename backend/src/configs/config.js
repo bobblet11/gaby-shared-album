@@ -1,6 +1,6 @@
 const path = require("path");
 require("dotenv").config();
-const logger = require("./winston")
+const logger = require("./logger")
 
 const config = {
         db: {
