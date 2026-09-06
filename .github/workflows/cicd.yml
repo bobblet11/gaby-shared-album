@@ -23,8 +23,17 @@ jobs:
 
                         - name: Create nginx config
                           run: |
-                                        export DB_HOST="${{vars.DB_HOST}}"
+                                        export DB_HOST="${{ vars.DB_HOST }}"
+                                        export DB_PORT="${{ vars.DB_PORT }}"
+                                          
                                         export API_PORT="${{ vars.API_PORT }}"
+                                        export API_HOST="${{ vars.API_HOST }}"
+
+                                        export GRAPHITE_HOST="${{ vars.GRAPHITE_HOST }}"
+                                        export GRAPHITE_PORT_WEB_UI="${{ vars.GRAPHITE_PORT_WEB_UI }}"
+                                        export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
+                                        export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
+
                                         export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
                                         : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
 
@@ -51,7 +60,16 @@ jobs:
 
                                                 # Forward API requests
                                                 location /api/ {
-                                                        proxy_pass http://backend:${API_PORT};
+                                                        proxy_pass http://${API_HOST}:${API_PORT};
+                                                        proxy_set_header Host \$host;
+                                                        proxy_set_header X-Real-IP \$remote_addr;
+                                                        proxy_request_buffering off;
+                                                        proxy_read_timeout 300;
+                                                }
+                                                        
+                                                # Forward stats to graphite dashboard
+                                                location /stats/ {
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_ADMIN};
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
                                                         proxy_request_buffering off;
@@ -258,12 +276,20 @@ jobs:
                                           export BACKEND_ENV_PATH="${PROJECT_PATH}/backend/.env.production"
                                           export FRONTEND_ENV_PATH="${PROJECT_PATH}/frontend/.env.production"
                                           export DOCKER_ENV_PATH="${PROJECT_PATH}/infra/docker/.env"
+                                          
                                           export DB_USER="${{ secrets.DB_USER }}"
                                           export DB_PASS="${{ secrets.DB_PASS }}"
                                           export DB_NAME="${{ vars.DB_NAME }}"
                                           export DB_HOST="${{ vars.DB_HOST }}"
                                           export DB_PORT="${{ vars.DB_PORT }}"
+
                                           export API_PORT="${{ vars.API_PORT }}"
+                                          export API_HOST="${{ vars.API_HOST }}"
+
+                                          export GRAPHITE_HOST="${{ vars.GRAPHITE_HOST }}"
+                                          export GRAPHITE_PORT_WEB_UI="${{ vars.GRAPHITE_PORT_WEB_UI }}"
+                                          export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
+                                          export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
                                           
                                           # volumes will map uploads to the external media path
                                           export EXTERNAL_STATIC_MEDIA_PATH="/var/www/${{ github.event.repository.name }}/uploads"
@@ -294,12 +320,17 @@ jobs:
                                           
 
                                           sudo cat > ${BACKEND_ENV_PATH} <<EOF
+                                          API_HOST=$API_HOST
                                           API_PORT=$API_PORT
                                           DB_USER=$DB_USER
                                           DB_PASS=$DB_PASS
                                           DB_NAME=$DB_NAME
                                           DB_HOST=$DB_HOST
                                           DB_PORT=$DB_PORT
+                                          GRAPHITE_HOST=$GRAPHITE_HOST
+                                          GRAPHITE_PORT_WEB_UI=$GRAPHITE_PORT_WEB_UI
+                                          GRAPHITE_PORT_INGEST=$GRAPHITE_PORT_INGEST
+                                          GRAPHITE_PORT_ADMIN=$GRAPHITE_PORT_ADMIN
                                           PUBLIC_API_DOMAIN=${{ vars.PUBLIC_API_DOMAIN }}
                                           BASE_MEDIA_PATH=$INTERNAL_STATIC_MEDIA_PATH
                                           DOWN_SCALE_IMAGE_FOLDER_NAME="${{ vars.DOWN_SCALE_IMAGE_FOLDER_NAME }}"
