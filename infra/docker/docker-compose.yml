@@ -23,8 +23,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
-    hostname: db
+      - "${DB_PORT}:5432"
+    hostname: ${DB_HOST}
 
   backend:
     container_name: backend
@@ -38,7 +38,7 @@ services:
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
     
-    hostname: backend
+    hostname: ${API_HOST}
 
 
   graphite:
@@ -46,13 +46,13 @@ services:
     container_name: graphite
     restart: always
     ports:
-      - "80:80"       # Grafana UI
-      - "81:81"       # Graphite Web UI
-      - "8125:8125/udp" # StatsD UDP ingestion
-      - "8126:8126"   # StatsD admin
+      - "8080:80"       # Grafana UI
+      - "${GRAPHITE_PORT_WEB_UI}:81"       # Graphite Web UI
+      - "${GRAPHITE_PORT_INGEST}:8125/udp" # StatsD UDP ingestion
+      - "${GRAPHITE_PORT_ADMIN}:8126"   # StatsD admin
     volumes:
       - graphite_data:/opt/graphite/storage
-    hostname: graphite
+    hostname: ${GRAPHITE_HOST}
   
 volumes:
   postgres_data:
