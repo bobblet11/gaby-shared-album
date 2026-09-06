@@ -46,7 +46,7 @@ services:
     container_name: graphite
     restart: always
     ports:
-      - "8080:80"       # Grafana UI
+      - "${GRAPHITE_PORT_UI}:3000"       # Grafana UI
       - "${GRAPHITE_PORT_WEB_UI}:81"       # Graphite Web UI
       - "${GRAPHITE_PORT_INGEST}:8125/udp" # StatsD UDP ingestion
       - "${GRAPHITE_PORT_ADMIN}:8126"   # StatsD admin

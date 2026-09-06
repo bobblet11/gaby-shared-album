@@ -28,6 +28,7 @@ jobs:
                                         export API_HOST="${{ vars.API_HOST }}"
 
                                         export GRAPHITE_HOST="${{ vars.GRAPHITE_HOST }}"
+                                        export GRAPHITE_PORT_UI="${{ vars.GRAPHITE_PORT_UI }}"
                                         export GRAPHITE_PORT_WEB_UI="${{ vars.GRAPHITE_PORT_WEB_UI }}"
                                         export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
                                         export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
@@ -66,8 +67,8 @@ jobs:
                                                 }
                                                         
                                                 # Forward stats to graphite dashboard
-                                                location /stats/ {
-                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI};
+                                                location /graphite/ {
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI};
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
                                                         proxy_request_buffering off;
@@ -285,6 +286,7 @@ jobs:
                                           export API_HOST="${{ vars.API_HOST }}"
 
                                           export GRAPHITE_HOST="${{ vars.GRAPHITE_HOST }}"
+                                          export GRAPHITE_PORT_UI="${{ vars.GRAPHITE_PORT_UI }}"
                                           export GRAPHITE_PORT_WEB_UI="${{ vars.GRAPHITE_PORT_WEB_UI }}"
                                           export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
                                           export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
@@ -357,6 +359,7 @@ jobs:
                                           DB_HOST=$DB_HOST
                                           DB_PORT=$DB_PORT
                                           GRAPHITE_HOST=$GRAPHITE_HOST
+                                          GRAPHITE_PORT_UI=$GRAPHITE_PORT_UI
                                           GRAPHITE_PORT_WEB_UI=$GRAPHITE_PORT_WEB_UI
                                           GRAPHITE_PORT_INGEST=$GRAPHITE_PORT_INGEST
                                           GRAPHITE_PORT_ADMIN=$GRAPHITE_PORT_ADMIN
