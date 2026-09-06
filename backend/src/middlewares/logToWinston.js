@@ -1,6 +1,6 @@
 const logger = require("../configs/winston");
 
-const logToWinston = (req, res, next) => {
+const logToWinston = async (req, res, next) => {
 
         const method = req.method;
         const url = req.originalUrl || req.url;
