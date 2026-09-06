@@ -1,4 +1,4 @@
-const logger = require("../configs/winston");
+const logger = require("../configs/logger");
 
 const logToWinston = async (req, res, next) => {
 
