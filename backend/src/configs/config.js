@@ -6,13 +6,14 @@ const config = {
         db: {
                 user: process.env.DB_USER || "user",
                 password: process.env.DB_PASS || "pass",
-                host: process.env.DB_HOST || "localhost",
+                host: process.env.DB_HOST || "db",
                 port: parseInt(process.env.DB_PORT, 10) || 5432,
                 name: process.env.DB_NAME || "db_name",
         },
 
         api: {
                 domain: process.env.PUBLIC_API_DOMAIN || "public_domain",
+                host: process.env.API_HOST || "backend",
                 port: parseInt(process.env.API_PORT, 10) || 3000,
         },
 
@@ -25,8 +26,8 @@ const config = {
         },
 
         metrics: {
-                host: process.env.METRICS_HOST || "localhost",
-                port: parseInt(process.env.METRICS_PORT, 10) || 8125,
+                host: process.env.GRAPHITE_HOST || "graphite",
+                port: parseInt(process.env.GRAPHITE_PORT_INGEST, 10) || 8126,
         },
 
         logs: {
