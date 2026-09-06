@@ -407,7 +407,7 @@ jobs:
                                         if ! command -v collectd -v >/dev/null 2>&1; then
                                                 echo "collectd not found, installing..."
                                                 sudo apt-get update -y
-                                                sudo apt-get install collectd
+                                                sudo apt-get install -y collectd
                                                 sudo systemctl enable --now collectd
                                         else
                                                 echo "collectd already installed: $(docker --version)"
