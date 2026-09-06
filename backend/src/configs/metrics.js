@@ -10,4 +10,4 @@ const statsd = new StatsD({
 });
 
 
-module.exports = {statsd};
+module.exports = statsd;
