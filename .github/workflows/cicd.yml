@@ -290,6 +290,7 @@ jobs:
                                           export GRAPHITE_PORT_WEB_UI="${{ vars.GRAPHITE_PORT_WEB_UI }}"
                                           export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
                                           export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
+                                          export GRAPHITE_PORT_CARBON="${{ vars.GRAPHITE_PORT_CARBON}}"
                                           
                                           # volumes will map uploads to the external media path
                                           export EXTERNAL_STATIC_MEDIA_PATH="/var/www/${{ github.event.repository.name }}/uploads"
@@ -362,6 +363,7 @@ jobs:
                                           GRAPHITE_PORT_UI=$GRAPHITE_PORT_UI
                                           GRAPHITE_PORT_WEB_UI=$GRAPHITE_PORT_WEB_UI
                                           GRAPHITE_PORT_INGEST=$GRAPHITE_PORT_INGEST
+                                          GRAPHITE_PORT_CARBON=$GRAPHITE_PORT_CARBON
                                           GRAPHITE_PORT_ADMIN=$GRAPHITE_PORT_ADMIN
                                           EOF
 
