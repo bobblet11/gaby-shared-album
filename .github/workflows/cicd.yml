@@ -75,6 +75,20 @@ jobs:
                                                         proxy_read_timeout 300;
                                                 }
 
+                                                # Grafana UI
+                                                location /grafana/ {
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI}/;
+                                                        proxy_set_header Host $host;
+                                                        proxy_set_header X-Real-IP $remote_addr;
+                                                }
+
+                                                # Graphite Web UI
+                                                location /graphite/ {
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI}/;
+                                                        proxy_set_header Host $host;
+                                                        proxy_set_header X-Real-IP $remote_addr;
+                                                }
+
 
                                         }
                                         EOF
