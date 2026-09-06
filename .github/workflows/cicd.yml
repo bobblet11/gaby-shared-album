@@ -67,7 +67,7 @@ jobs:
                                                         
                                                 # Forward stats to graphite dashboard
                                                 location /stats/ {
-                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_ADMIN};
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI};
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
                                                         proxy_request_buffering off;
