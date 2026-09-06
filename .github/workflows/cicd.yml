@@ -68,7 +68,6 @@ jobs:
                                                         
                                                 # Forward stats to graphite dashboard
                                                 location /graphite/ {
-                                                
                                                         proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI}/;
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
@@ -379,3 +378,65 @@ jobs:
 
                                           echo "Containers deployed...\n\n"
                                           echo "----------------------------------------------"
+
+                        - name: Install and run system metric daemon (collectd)
+                          uses: appleboy/ssh-action@v0.1.10
+                          with:
+                                  host: ${{ secrets.TARGET_HOST }}
+                                  username: ${{ secrets.TARGET_USER }}
+                                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  port: ${{ secrets.TARGET_PORT }}
+
+                                  proxy_host: ${{ secrets.GATEWAY_HOST }}
+                                  proxy_port: ${{ secrets.GATEWAY_PORT }}
+                                  proxy_username: ${{ secrets.GATEWAY_USER }}
+                                  proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  script: |
+                                        set -euo pipefail
+                                        echo "----------------------------------------------"
+                                        export GRAPHITE_HOST="${{ vars.GRAPHITE_HOST }}"
+                                        export GRAPHITE_PORT_CARBON="${{ vars.GRAPHITE_PORT_CARBON }}"
+
+                                        if ! command -v collectd -v >/dev/null 2>&1; then
+                                                echo "collectd not found, installing..."
+                                                sudo apt-get update -y
+                                                sudo apt-get install collectd
+                                                sudo systemctl enable --now collectd
+                                        else
+                                                echo "collectd already installed: $(docker --version)"
+                                        fi
+                                        
+                                        echo "----------------------------------------------"
+                                        echo "Ensuring config exists for collectd"
+
+                                        echo "----------------------------------------------"
+                                        echo "Configuring collectd..."
+                                        sudo mkdir -p /etc/collectd
+                                        
+                                        sudo tee /etc/collectd/collectd.conf > /dev/null <<'EOF'
+                                        LoadPlugin cpu
+                                        LoadPlugin memory
+                                        LoadPlugin disk
+                                        LoadPlugin network
+
+                                        <Plugin write_graphite>
+                                        <Node "graphite">
+                                          Host "${GRAPHITE_HOST}"
+                                          Port "${GRAPHITE_PORT_CARBON}"
+                                          Protocol "tcp"
+                                          Prefix "system."
+                                        </Node>
+                                        </Plugin>
+                                        EOF
+
+                                        echo "----------------------------------------------"
+                                        echo "Testing collectd config..."
+                                        sudo collectd -t
+
+                                        echo "----------------------------------------------"
+                                        echo "Restarting collectd..."
+                                        sudo systemctl restart collectd
+                                        sudo systemctl status collectd --no-pager
+
+
+
