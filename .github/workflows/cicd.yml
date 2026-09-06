@@ -65,24 +65,15 @@ jobs:
                                                         proxy_request_buffering off;
                                                         proxy_read_timeout 300;
                                                 }
-                                                        
-                                                # Forward stats to graphite dashboard
-                                                location /graphite/ {
-                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI}/;
-                                                        proxy_set_header Host \$host;
-                                                        proxy_set_header X-Real-IP \$remote_addr;
-                                                        proxy_request_buffering off;
-                                                        proxy_read_timeout 300;
-                                                }
 
-                                                # Grafana UI
+                                                # Grafana UI (3000)
                                                 location /grafana/ {
                                                         proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI}/;
                                                         proxy_set_header Host $host;
                                                         proxy_set_header X-Real-IP $remote_addr;
                                                 }
 
-                                                # Graphite Web UI
+                                                # Graphite Web UI (81)
                                                 location /graphite/ {
                                                         proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI}/;
                                                         proxy_set_header Host $host;
