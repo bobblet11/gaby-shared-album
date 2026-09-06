@@ -7,8 +7,9 @@ const errorHandler = require("./middlewares/errorHandler");
 const config  = require("./configs/config");
 const photoService = require("./services/photoService");
 const photoRoutes = require("./routes/photoRoutes");
-const countRequest = require("./middlewares/countRequest");
+const printConfig = require("./configs/prettyPrintConfig")
 
+printConfig()
 photoService.statusCheck();
 
 const app = express();
@@ -16,7 +17,6 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.use(logToWinston);
-app.use(countRequest)
 
 logger.info("Mounting /test");
 app.get("/api/test", (req, res) => res.send("OK"));
