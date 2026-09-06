@@ -50,6 +50,7 @@ services:
       - "${GRAPHITE_PORT_WEB_UI}:81"       # Graphite Web UI
       - "${GRAPHITE_PORT_INGEST}:8125/udp" # StatsD UDP ingestion
       - "${GRAPHITE_PORT_ADMIN}:8126"   # StatsD admin
+      - "${GRAPHITE_PORT_CARBON}:2003"   # StatsD admin
     volumes:
       - graphite_data:/opt/graphite/storage
     hostname: ${GRAPHITE_HOST}
