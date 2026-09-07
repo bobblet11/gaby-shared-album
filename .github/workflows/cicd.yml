@@ -36,7 +36,7 @@ jobs:
                                         export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
                                         : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
 
-                                        sudo cat > ./infra/nginx/frontend.conf <<'EOF'
+                                        sudo cat > ./infra/nginx/frontend.conf <<EOF
                                         server {
                                                 listen 80;
                                                 listen [::]:80;
@@ -46,7 +46,7 @@ jobs:
 
                                                 # Serve media uploads FIRST
                                                 location /media/ {
-                                                        alias $INTERNAL_STATIC_MEDIA_PATH/;
+                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
                                                         autoindex off;
                                                 }
 
@@ -54,33 +54,31 @@ jobs:
                                                 location / {
                                                         root /usr/share/nginx/html;
                                                         index index.html;
-                                                        try_files $uri /index.html;
+                                                        try_files \$uri /index.html;
                                                 }
 
                                                 # Forward API requests
                                                 location /api/ {
-                                                        proxy_pass http://$API_HOST:$API_PORT;
-                                                        proxy_set_header Host $host;
-                                                        proxy_set_header X-Real-IP $remote_addr;
+                                                        proxy_pass http://${API_HOST}:${API_PORT};
+                                                        proxy_set_header Host \$host;
+                                                        proxy_set_header X-Real-IP \$remote_addr;
                                                         proxy_request_buffering off;
                                                         proxy_read_timeout 300;
                                                 }
 
                                                 # Grafana UI (3000)
                                                 location /grafana/ {
-                                                        proxy_pass http://$GRAPHITE_HOST:$GRAPHITE_PORT_UI/;
-                                                        proxy_set_header Host $host;
-                                                        proxy_set_header X-Real-IP $remote_addr;
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI}/;
+                                                        proxy_set_header Host \$host;
+                                                        proxy_set_header X-Real-IP \$remote_addr;
                                                 }
 
                                                 # Graphite Web UI (81)
                                                 location /graphite/ {
-                                                        proxy_pass http://$GRAPHITE_HOST:$GRAPHITE_PORT_WEB_UI/;
-                                                        proxy_set_header Host $host;
-                                                        proxy_set_header X-Real-IP $remote_addr;
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI}/;
+                                                        proxy_set_header Host \$host;
+                                                        proxy_set_header X-Real-IP \$remote_addr;
                                                 }
-
-
                                         }
                                         EOF
 
@@ -348,12 +346,6 @@ jobs:
                                           REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
                                           REACT_APP_MAX_FILES_PER_UPLOAD=$REACT_APP_MAX_FILES_PER_UPLOAD
-                                          INTERNAL_STATIC_MEDIA_PATH=${{vars.INTERNAL_STATIC_MEDIA_PATH}}
-                                          API_HOST=${{vars.API_HOST}}
-                                          API_PORT=${{vars.API_PORT}}
-                                          GRAPHITE_HOST=${{vars.GRAPHITE_HOST}}
-                                          GRAPHITE_PORT_UI=${{vars.GRAPHITE_PORT_UI}}
-                                          GRAPHITE_PORT_WEB_UI=${{vars.GRAPHITE_PORT_WEB_UI}}
                                           EOF
 
                                           sudo cat > ${DOCKER_ENV_PATH} <<EOF
