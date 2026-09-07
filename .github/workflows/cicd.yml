@@ -348,6 +348,12 @@ jobs:
                                           REACT_APP_API_URL=${{ vars.PUBLIC_API_DOMAIN }}
                                           REACT_APP_FEATURE_FLAG=$REACT_APP_FEATURE_FLAG
                                           REACT_APP_MAX_FILES_PER_UPLOAD=$REACT_APP_MAX_FILES_PER_UPLOAD
+                                          INTERNAL_STATIC_MEDIA_PATH=${{vars.INTERNAL_STATIC_MEDIA_PATH}}
+                                          API_HOST=${{vars.API_HOST}}
+                                          API_PORT=${{vars.API_PORT}}
+                                          GRAPHITE_HOST=${{vars.GRAPHITE_HOST}}
+                                          GRAPHITE_PORT_UI=${{vars.GRAPHITE_PORT_UI}}
+                                          GRAPHITE_PORT_WEB_UI=${{vars.GRAPHITE_PORT_WEB_UI}}
                                           EOF
 
                                           sudo cat > ${DOCKER_ENV_PATH} <<EOF
