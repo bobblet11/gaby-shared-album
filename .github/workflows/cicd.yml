@@ -412,8 +412,8 @@ jobs:
                                         sleep 10
                                         echo "Waited."
 
-                                        docker ps -a
-                                        BAD=$(docker ps -a --filter "status=exited" --filter "health=unhealthy" --format "{{.Names}} {{.Status}}")
+                                        sudo docker ps -a
+                                        BAD=$(sudo docker ps -a --filter "status=exited" --filter "health=unhealthy" --format "{{.Names}} {{.Status}}")
 
                                         if [ -n "$BAD" ]; then
                                                 echo "❌ Containers failed:"
