@@ -8,14 +8,16 @@ services:
       - ${PROJECT_PATH}/frontend/.env.production
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
-    hostname: nginx
+    # hostname: nginx
+    networks:
+      - appnet
 
   # change db code to contact postgres CONTAINER, not localhost!
   # db:5432
   # postgres://DB_USER:DB_PASS@db:5432/DB_NAME
   db:
     image: postgres:15
-    container_name: db
+    container_name: ${DB_HOST}
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -24,10 +26,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "${DB_PORT}:5432"
-    hostname: ${DB_HOST}
+    # hostname: ${DB_HOST}
+    networks:
+      - appnet
 
   backend:
-    container_name: backend
+    container_name: ${API_HOST}
     image: ghcr.io/${GITHUB_REPO}/backend:${GITHUB_SHA}
     # command: tail -f 
     ports:
@@ -38,12 +42,14 @@ services:
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
     
-    hostname: ${API_HOST}
+    # hostname: ${API_HOST}
+    networks:
+      - appnet
 
 
   graphite:
     image: hopsoft/graphite-statsd
-    container_name: graphite
+    container_name:  ${GRAPHITE_HOST}
     restart: always
     ports:
       - "${GRAPHITE_PORT_UI}:3000"       # Grafana UI
@@ -53,8 +59,15 @@ services:
       - "${GRAPHITE_PORT_CARBON}:2003"   # StatsD admin
     volumes:
       - graphite_data:/opt/graphite/storage
-    hostname: ${GRAPHITE_HOST}
+    # hostname: ${GRAPHITE_HOST}
+    networks:
+      - appnet
+
   
 volumes:
   postgres_data:
   graphite_data:
+
+networks:
+  appnet:
+

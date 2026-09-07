@@ -7,6 +7,7 @@ const config = require("./config");
 const statsd = new StatsD({
         host: config.metrics.host,
         port: config.metrics.port,
+        protocol: 'udp'
 });
 
 
