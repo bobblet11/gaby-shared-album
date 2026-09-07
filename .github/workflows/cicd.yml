@@ -46,7 +46,7 @@ jobs:
 
                                                 # Serve media uploads FIRST
                                                 location /media/ {
-                                                        alias ${INTERNAL_STATIC_MEDIA_PATH}/;
+                                                        alias $INTERNAL_STATIC_MEDIA_PATH/;
                                                         autoindex off;
                                                 }
 
@@ -59,7 +59,7 @@ jobs:
 
                                                 # Forward API requests
                                                 location /api/ {
-                                                        proxy_pass http://${API_HOST}:${API_PORT};
+                                                        proxy_pass http://$API_HOST:$API_PORT;
                                                         proxy_set_header Host $host;
                                                         proxy_set_header X-Real-IP $remote_addr;
                                                         proxy_request_buffering off;
@@ -68,14 +68,14 @@ jobs:
 
                                                 # Grafana UI (3000)
                                                 location /grafana/ {
-                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_UI}/;
+                                                        proxy_pass http://$GRAPHITE_HOST:$GRAPHITE_PORT_UI/;
                                                         proxy_set_header Host $host;
                                                         proxy_set_header X-Real-IP $remote_addr;
                                                 }
 
                                                 # Graphite Web UI (81)
                                                 location /graphite/ {
-                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI}/;
+                                                        proxy_pass http://$GRAPHITE_HOST:$GRAPHITE_PORT_WEB_UI/;
                                                         proxy_set_header Host $host;
                                                         proxy_set_header X-Real-IP $remote_addr;
                                                 }
