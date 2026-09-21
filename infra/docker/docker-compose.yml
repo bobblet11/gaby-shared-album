@@ -48,7 +48,7 @@ services:
 
 
   graphite:
-    image: hopsoft/graphite-statsd
+    image: graphiteapp/graphite-statsd
     container_name:  ${GRAPHITE_HOST}
     restart: always
     ports:
