@@ -3,8 +3,8 @@ const statsd = require("../configs/metrics");
 // returns a function that injects routeName into its definition. req and res will be filled in via arguments
 function recordMetrics(routeName) {
         return (req, res, next) => {
-                statsd.increment("http.requests"); // counter
-                statsd.increment(`http.requests.${routeName}`);
+                statsd.increment("http.request"); // counter
+                statsd.increment(`http.request.${routeName}`);
 
                 const bodySize = Buffer.byteLength(JSON.stringify(req.body || {}));
                 statsd.histogram("http.request_size", bodySize);
