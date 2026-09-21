@@ -79,6 +79,14 @@ jobs:
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
                                                 }
+
+                                                location /graphite/static/ {
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI}/static/;
+                                                }
+
+                                                location /graphite/content/ {
+                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAPHITE_PORT_WEB_UI}/content/;
+                                                }
                                         }
                                         EOF
 
