@@ -59,6 +59,7 @@ services:
       - "${GRAPHITE_PORT_CARBON}:2003"   # StatsD admin
     volumes:
       - graphite_data:/opt/graphite/storage
+      - ./graphite/local_settings.py:/opt/graphite/webapp/graphite/local_settings.py:ro
     # hostname: ${GRAPHITE_HOST}
     networks:
       - appnet
