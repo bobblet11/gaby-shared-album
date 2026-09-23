@@ -30,7 +30,7 @@ const config = {
         },
 
         logs: {
-                logFilePath: process.env.LOGS_FILE_PATH || "/var/log/app.log",
+                logFilePath: process.env.LOGS_FILE_PATH || "/logs/app.log",
         },
 };
 

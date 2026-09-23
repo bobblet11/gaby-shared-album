@@ -304,6 +304,10 @@ jobs:
                                           export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
                                           export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
                                           export GRAPHITE_PORT_CARBON="${{ vars.GRAPHITE_PORT_CARBON}}"
+                                          export LOGS_FILE_PATH="${{ vars.LOGS_FILE_PATH }}"
+                                          export LOKI_HOST="${{ vars.LOKI_HOST }}"
+                                          export PROMTAIL_HOST="${{ vars.PROMTAIL_HOST }}"
+                                          export GRAFANA_HOST="${{ vars.GRAFANA_HOST }}"
                                           
                                           # volumes will map uploads to the external media path
                                           export EXTERNAL_STATIC_MEDIA_PATH="/var/www/${{ github.event.repository.name }}/uploads"
@@ -349,6 +353,7 @@ jobs:
                                           FULL_SCALE_IMAGE_FOLDER_NAME="${{ vars.FULL_SCALE_IMAGE_FOLDER_NAME }}"
                                           ORIGINAL_SCALE_IMAGE_FOLDER_NAME="${{ vars.ORIGINAL_SCALE_IMAGE_FOLDER_NAME }}"
                                           TEMP_SCALE_IMAGE_FOLDER_NAME="${{ vars.TEMP_SCALE_IMAGE_FOLDER_NAME }}"
+                                          LOGS_FILE_PATH=$LOGS_FILE_PATH
                                           EOF
 
 
@@ -378,6 +383,10 @@ jobs:
                                           GRAPHITE_PORT_INGEST=$GRAPHITE_PORT_INGEST
                                           GRAPHITE_PORT_CARBON=$GRAPHITE_PORT_CARBON
                                           GRAPHITE_PORT_ADMIN=$GRAPHITE_PORT_ADMIN
+                                          LOGS_FILE_PATH=$LOGS_FILE_PATH
+                                          LOKI_HOST=$LOKI_HOST
+                                          PROMTAIL_HOST=$PROMTAIL_HOST
+                                          GRAFANA_HOST=$GRAFANA_HOST
                                           EOF
 
                                           echo "Generated .env files...\n\n"
