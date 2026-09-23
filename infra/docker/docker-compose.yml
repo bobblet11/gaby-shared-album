@@ -88,7 +88,7 @@ services:
     container_name:  ${GRAFANA_HOST}
     restart: always
     volumes:
-      - grafana_data: /var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
     networks:
