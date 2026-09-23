@@ -8,7 +8,6 @@ services:
       - ${PROJECT_PATH}/frontend/.env.production
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
-      - backend_logs:${LOGS_FILE_PATH}
     # hostname: nginx
     networks:
       - appnet
