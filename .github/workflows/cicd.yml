@@ -475,7 +475,7 @@ jobs:
                                         echo "Configuring collectd..."
                                         sudo mkdir -p /etc/collectd
                                         
-                                        sudo tee /etc/collectd/collectd.conf > /dev/null <<'EOF'
+                                        sudo tee /etc/collectd/collectd.conf > /dev/null <<EOF
                                         LoadPlugin cpu
                                         LoadPlugin memory
                                         LoadPlugin disk
