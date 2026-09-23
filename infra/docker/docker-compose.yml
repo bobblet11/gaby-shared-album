@@ -4,7 +4,7 @@ services:
     container_name: nginx
     ports:
       - "80:80"
-    env_file:
+    env_file: 
       - ${PROJECT_PATH}/frontend/.env.production
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
