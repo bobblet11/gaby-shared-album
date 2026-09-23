@@ -2,12 +2,17 @@ const statsd = require("../configs/metrics");
 
 // Base metric namespaces
 const METRICS = {
-        requests: "http.requests",
-        requestSize: "http.requests.size",
-        uploadedFiles: "http.requests.uploaded_files",
-        responseTime: "http.requests.response_time",
-        status: "http.status",
-        timeout: "http.timeout",
+        //increments
+        requestsCount: "api.requests",
+        statusCount: "api.status",
+        timeoutCount: "api.timeout",
+
+        //value records
+        bodySize: "api.body_size",
+        numUploadedFiles: "api.num_uploaded_files",
+        
+        //timing
+        latencyTiming: "api.latency",
 };
 
 // Helper to build keys consistently
@@ -18,36 +23,36 @@ function key(base, ...parts) {
 function recordMetrics(routeName) {
         return (req, res, next) => {
                 // Requests
-                statsd.increment(key(METRICS.requests, "total"));
-                statsd.increment(key(METRICS.requests, routeName));
+                statsd.increment(key(METRICS.requestsCount, "total"));
+                statsd.increment(key(METRICS.requestsCount, routeName));
 
                 // Request size
                 const bodySize = Buffer.byteLength(JSON.stringify(req.body || {}));
-                statsd.histogram(key(METRICS.requestSize, "total"), bodySize);
-                statsd.histogram(key(METRICS.requestSize, routeName), bodySize);
+                statsd.histogram(key(METRICS.bodySize, "total"), bodySize);
+                statsd.histogram(key(METRICS.bodySize, routeName), bodySize);
 
                 // Uploaded files
                 const fileCount = Array.isArray(req.files) ? req.files.length : 0;
-                statsd.increment(key(METRICS.uploadedFiles, "total"), fileCount);
-                statsd.increment(key(METRICS.uploadedFiles, routeName), fileCount);
+                statsd.histogram(key(METRICS.numUploadedFiles, "total"), fileCount);
+                statsd.histogram(key(METRICS.numUploadedFiles, routeName), fileCount);
 
                 const start = Date.now();
                 res.on("finish", () => {
                         const status = String(res.statusCode);
                         const duration = Date.now() - start;
 
-                        // Response time
-                        statsd.timing(key(METRICS.responseTime, "total"), duration);
-                        statsd.timing(key(METRICS.responseTime, routeName), duration);
-
                         // Status codes
-                        statsd.increment(key(METRICS.status, "total", status));
-                        statsd.increment(key(METRICS.status, routeName, status));
+                        statsd.increment(key(METRICS.statusCount, "total", status));
+                        statsd.increment(key(METRICS.statusCount, routeName, status));
+
+                        // Response time
+                        statsd.timing(key(METRICS.latencyTiming, "total"), duration);
+                        statsd.timing(key(METRICS.latencyTiming, routeName), duration);
                 });
 
                 res.on("timeout", () => {
-                        statsd.increment(key(METRICS.timeout, "total"));
-                        statsd.increment(key(METRICS.timeout, routeName));
+                        statsd.increment(key(METRICS.timeoutCount, "total"));
+                        statsd.increment(key(METRICS.timeoutCount, routeName));
                 });
 
                 next();
