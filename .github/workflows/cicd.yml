@@ -264,6 +264,7 @@ jobs:
                                   proxy_port: ${{ secrets.GATEWAY_PORT }}
                                   proxy_username: ${{ secrets.GATEWAY_USER }}
                                   proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  command_timeout: 45m
                                   script: |
                                           set -euo pipefail
                                           echo "----------------------------------------------"
@@ -287,6 +288,7 @@ jobs:
                                   proxy_port: ${{ secrets.GATEWAY_PORT }}
                                   proxy_username: ${{ secrets.GATEWAY_USER }}
                                   proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+                                  command_timeout: 45m
                                   script: |
                                           set -euo pipefail
                                           echo "----------------------------------------------"
