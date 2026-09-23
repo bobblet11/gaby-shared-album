@@ -33,6 +33,9 @@ jobs:
                                         export GRAPHITE_PORT_INGEST="${{ vars.GRAPHITE_PORT_INGEST }}"
                                         export GRAPHITE_PORT_ADMIN="${{ vars.GRAPHITE_PORT_ADMIN }}"
 
+                                        export GRAFANA_HOST="${{ vars.GRAFANA_HOST }}"
+                                        
+
                                         export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
                                         : "${INTERNAL_STATIC_MEDIA_PATH:=/usr/src/app/uploads}"
 
@@ -68,9 +71,12 @@ jobs:
 
                                                 # Grafana UI (3000)
                                                 location /grafana/ {
-                                                        proxy_pass http://${GRAPHITE_HOST}:${GRAFANA_PORT_WEB_UI}/;
+                                                        proxy_pass http://${GRAFANA_HOST}:${GRAFANA_PORT_WEB_UI}/;
+                                                        
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
+                                                        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                                                        proxy_set_header X-Forwarded-Proto \$scheme;
                                                 }
 
                                                 # Graphite Web UI (80)
