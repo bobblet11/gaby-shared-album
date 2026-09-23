@@ -71,7 +71,7 @@ jobs:
 
                                                 # Grafana UI (3000)
                                                 location /grafana/ {
-                                                        proxy_pass http://${GRAFANA_HOST}:${GRAFANA_PORT_WEB_UI}/;
+                                                        proxy_pass http://${GRAFANA_HOST}:${GRAFANA_PORT_WEB_UI};
                                                         proxy_set_header Host \$host;
                                                         proxy_set_header X-Real-IP \$remote_addr;
 
