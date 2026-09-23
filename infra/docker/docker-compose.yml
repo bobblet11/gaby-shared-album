@@ -8,6 +8,7 @@ services:
       - ${PROJECT_PATH}/frontend/.env.production
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
+      - backend_logs:${LOGS_FILE_PATH}
     # hostname: nginx
     networks:
       - appnet
@@ -41,6 +42,7 @@ services:
 
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
+      - backend_logs:${LOGS_FILE_PATH}
     
     # hostname: ${API_HOST}
     networks:
@@ -52,22 +54,51 @@ services:
     container_name:  ${GRAPHITE_HOST}
     restart: always
     ports:
-      # - "${GRAFANA_PORT_WEB_UI}:3000"       # Grafana Web UI
-      # - "${GRAPHITE_PORT_WEB_UI}:80"       # Graphite Web UI
       - "${GRAPHITE_PORT_INGEST}:8125/udp" # StatsD UDP ingestion
       - "${GRAPHITE_PORT_ADMIN}:8126"   # StatsD admin
       - "${GRAPHITE_PORT_CARBON}:2003"   # StatsD admin
     volumes:
       - graphite_data:/opt/graphite/storage
       - ./graphite/local_settings.py:/opt/graphite/webapp/graphite/local_settings.py:ro
-    # hostname: ${GRAPHITE_HOST}
     networks:
       - appnet
 
+  promtail:
+    image: grafana/promtail:latest
+    container_name:  ${PROMTAIL_HOST}
+    volumes:
+      - backend_logs:/var/log/backend:ro
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - appnet
+
+  loki:
+    image: grafana/loki
+    container_name:  ${LOKI_HOST}
+    restart: always
+    volumes:
+      - loki_data:/loki
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+    networks:
+      - appnet
+
+  grafana:
+    image: grafana/grafana
+    container_name:  ${GRAFANA_HOST}
+    restart: always
+    volumes:
+      - grafana_data: /var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - appnet
   
 volumes:
+  backend_logs:
   postgres_data:
   graphite_data:
+  loki_data:
+  grafana_data:
 
 networks:
   appnet:
