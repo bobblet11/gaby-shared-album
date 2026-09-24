@@ -326,7 +326,7 @@ jobs:
                                           export LOKI_HOST="${{ vars.LOKI_HOST }}"
                                           export PROMTAIL_HOST="${{ vars.PROMTAIL_HOST }}"
                                           export GRAFANA_HOST="${{ vars.GRAFANA_HOST }}"
-                                          
+
                                           # volumes will map uploads to the external media path
                                           export EXTERNAL_STATIC_MEDIA_PATH="/var/www/${{ github.event.repository.name }}/uploads"
                                           export INTERNAL_STATIC_MEDIA_PATH="${{ vars.INTERNAL_STATIC_MEDIA_PATH }}"
@@ -416,7 +416,7 @@ jobs:
                                           sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" --env-file "${DOCKER_ENV_PATH}" up -d
 
                                           echo "Running migrations..."
-                                          sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" exec backend npm run migrate:up
+                                          sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" exec ${API_HOST} npm run migrate:up
 
                                           echo "Containers deployed...\n\n"
                                           echo "----------------------------------------------"
