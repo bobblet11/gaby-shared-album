@@ -18,7 +18,7 @@ services:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
 
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80/test || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/test || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -79,7 +79,7 @@ services:
         condition: service_healthy
 
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:5000/api/test || exit 1"]
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:5000/api/test || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5
