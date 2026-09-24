@@ -416,7 +416,7 @@ jobs:
                                           sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" --env-file "${DOCKER_ENV_PATH}" up -d
 
                                           echo "Running migrations..."
-                                          sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" exec ${API_HOST} npm run migrate:up
+                                          sudo docker compose -f "${PROJECT_PATH}/infra/docker/docker-compose.yml" exec "${API_HOST}" npm run migrate:up
 
                                           echo "Containers deployed...\n\n"
                                           echo "----------------------------------------------"
