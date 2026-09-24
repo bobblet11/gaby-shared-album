@@ -2,40 +2,71 @@ services:
   nginx:
     image: ghcr.io/${GITHUB_REPO}/frontend:${GITHUB_SHA}
     container_name: nginx
+    restart: unless-stopped
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
     ports:
       - "80:80"
+
     env_file: 
       - ${PROJECT_PATH}/frontend/.env.production
+
     volumes:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
-    # hostname: nginx
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
     networks:
       - appnet
 
-  # change db code to contact postgres CONTAINER, not localhost!
-  # db:5432
-  # postgres://DB_USER:DB_PASS@db:5432/DB_NAME
+
   db:
     image: postgres:15
     container_name: ${DB_HOST}
+
+    restart: unless-stopped
+    stop_grace_period: 30s
+
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
     ports:
       - "${DB_PORT}:5432"
-    # hostname: ${DB_HOST}
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
     networks:
       - appnet
+
 
   backend:
     container_name: ${API_HOST}
     image: ghcr.io/${GITHUB_REPO}/backend:${GITHUB_SHA}
-    # command: tail -f 
+
+    restart: unless-stopped
+    stop_grace_period: 20s
+
     ports:
       - "${API_PORT}:5000"
+
     env_file:
       - ${PROJECT_PATH}/backend/.env.production
 
@@ -43,7 +74,21 @@ services:
       - ${EXTERNAL_STATIC_MEDIA_PATH}:${INTERNAL_STATIC_MEDIA_PATH}
       - backend_logs:${LOGS_FILE_PATH}
     
-    # hostname: ${API_HOST}
+    depends_on:
+      db:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+      [
+      "CMD-SHELL",
+      "wget -qO- http://localhost:5000/health || exit 1"
+      ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
     networks:
       - appnet
 
@@ -51,7 +96,9 @@ services:
   graphite:
     image: graphiteapp/graphite-statsd
     container_name:  ${GRAPHITE_HOST}
-    restart: always
+
+    restart: unless-stopped
+
     ports:
       - "${GRAPHITE_PORT_INGEST}:8125/udp" # StatsD UDP ingestion
       - "${GRAPHITE_PORT_ADMIN}:8126"   # StatsD admin
@@ -65,17 +112,23 @@ services:
   promtail:
     image: grafana/promtail:latest
     container_name:  ${PROMTAIL_HOST}
+    restart: unless-stopped
     volumes:
       - backend_logs:/var/log/backend:ro
       - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
     command: -config.file=/etc/promtail/config.yaml
+    
+    depends_on:
+      - backend
+
     networks:
       - appnet
 
   loki:
     image: grafana/loki
     container_name:  ${LOKI_HOST}
-    restart: always
+    restart: unless-stopped
+    
     volumes:
       - loki_data:/loki
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
@@ -85,7 +138,12 @@ services:
   grafana:
     image: grafana/grafana
     container_name:  ${GRAFANA_HOST}
-    restart: always
+    restart: unless-stopped
+
+    depends_on:
+      - loki
+      - graphite
+
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
@@ -102,4 +160,5 @@ volumes:
 
 networks:
   appnet:
+    driver: bridge
 
