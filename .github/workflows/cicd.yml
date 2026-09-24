@@ -47,6 +47,10 @@ jobs:
 
                                                 server_name _;
 
+                                                location /health/ {
+                                                        return 200;
+                                                }
+
                                                 # Serve media uploads FIRST
                                                 location /media/ {
                                                         alias ${INTERNAL_STATIC_MEDIA_PATH}/;
